@@ -1,0 +1,2048 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LinkBase 常联系 · AI 个人关系管理助手</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230a66c2'/><text x='50' y='72' font-size='52' font-weight='900' fill='white' text-anchor='middle' font-family='system-ui'>LB</text></svg>"/>
+<style>
+:root {
+  --blue: #0a66c2;
+  --blue-hover: #084c91;
+  --blue-light: #e8f4fd;
+  --blue-pale: #eef6ff;
+  --bg: #f5f7fa;
+  --sidebar-bg: #101828;
+  --sidebar-text: #d0d5dd;
+  --sidebar-active: #ffffff;
+  --card: #ffffff;
+  --text: #1f2937;
+  --text-secondary: #667085;
+  --border: #e4e7ec;
+  --green: #057642;
+  --green-bg: #dcfae6;
+  --yellow: #b7791f;
+  --yellow-bg: #fef0c7;
+  --red: #b42318;
+  --red-bg: #fee4e2;
+  --purple: #6941c6;
+  --purple-bg: #f4f3ff;
+  --shadow-sm: 0 1px 3px rgba(16,24,40,.06);
+  --shadow-md: 0 4px 16px rgba(16,24,40,.08);
+  --shadow-lg: 0 12px 32px rgba(16,24,40,.12);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 6px;
+  --transition: .2s ease;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  display: flex;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+a { color: var(--blue); text-decoration: none; }
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  z-index: 100;
+  transition: transform var(--transition);
+}
+.sidebar-brand {
+  padding: 20px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.sidebar-logo {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: var(--blue);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.sidebar-brand span { font-weight: 700; font-size: 15px; color: #fff; }
+.sidebar-nav { flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 2px; }
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+  font-size: 14px;
+  color: var(--sidebar-text);
+  user-select: none;
+}
+.nav-item:hover { background: rgba(255,255,255,.08); color: #fff; }
+.nav-item.active { background: rgba(255,255,255,.12); color: var(--sidebar-active); font-weight: 600; }
+.nav-icon {
+  width: 32px; height: 32px;
+  border-radius: var(--radius-xs);
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  flex-shrink: 0;
+  background: rgba(255,255,255,.06);
+}
+.nav-item.active .nav-icon { background: var(--blue); color: #fff; }
+.nav-badge {
+  margin-left: auto;
+  background: var(--red);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 99px;
+}
+.sidebar-footer {
+  padding: 16px 18px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  font-size: 12px;
+  color: rgba(255,255,255,.35);
+}
+
+/* ── Mobile menu toggle ── */
+.mobile-toggle {
+  display: none;
+  position: fixed;
+  top: 12px; left: 12px;
+  z-index: 200;
+  width: 40px; height: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--sidebar-bg);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+}
+.mobile-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+  z-index: 90;
+}
+
+/* ── Main content ── */
+.main {
+  flex: 1;
+  margin-left: 240px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.topbar-title { font-size: 18px; font-weight: 700; color: var(--text); }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.topbar-time { font-size: 13px; color: var(--text-secondary); }
+.topbar-avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 13px;
+}
+.content { flex: 1; padding: 24px 28px 40px; }
+
+/* ── Page sections ── */
+.page { display: none; }
+.page.active { display: block; animation: fadeIn .3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── Common components ── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+.card:hover { box-shadow: var(--shadow-md); }
+.grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
+
+.metric-card { padding: 20px; }
+.metric-card .num { font-size: 28px; font-weight: 800; color: var(--blue); line-height: 1.1; }
+.metric-card .label { color: var(--text-secondary); font-size: 13px; margin-top: 4px; }
+.metric-card .trend { font-size: 12px; margin-top: 6px; font-weight: 600; }
+.trend-up { color: var(--green); }
+.trend-down { color: var(--red); }
+
+.section-header { margin-bottom: 16px; }
+.section-header h2 { font-size: 20px; font-weight: 700; color: var(--text); }
+.section-header p { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
+
+.avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+.avatar-blue { background: #d9ecff; color: var(--blue); }
+.avatar-green { background: var(--green-bg); color: var(--green); }
+.avatar-yellow { background: var(--yellow-bg); color: var(--yellow); }
+.avatar-red { background: var(--red-bg); color: var(--red); }
+.avatar-purple { background: var(--purple-bg); color: var(--purple); }
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.tag-red { background: var(--red-bg); color: var(--red); }
+.tag-yellow { background: var(--yellow-bg); color: var(--yellow); }
+.tag-green { background: var(--green-bg); color: var(--green); }
+.tag-blue { background: var(--blue-pale); color: var(--blue); }
+.tag-purple { background: var(--purple-bg); color: var(--purple); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all var(--transition);
+}
+.btn-primary { background: var(--blue); color: #fff; }
+.btn-primary:hover { background: var(--blue-hover); }
+.btn-secondary { background: #fff; color: var(--blue); border: 1px solid var(--blue); }
+.btn-secondary:hover { background: var(--blue-pale); }
+.btn-sm { padding: 5px 12px; font-size: 13px; }
+.btn-ghost { background: transparent; color: var(--text-secondary); }
+.btn-ghost:hover { background: var(--bg); color: var(--text); }
+
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-secondary);
+}
+.empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+
+/* ── Filter tabs ── */
+.filter-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.filter-tab {
+  padding: 6px 14px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.filter-tab:hover { border-color: var(--blue); color: var(--blue); }
+.filter-tab.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+/* ── Task / Action cards ── */
+.action-card {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.action-card:hover { background: #fafbfc; }
+.action-card:last-child { border-bottom: none; }
+.action-body { flex: 1; min-width: 0; }
+.action-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 4px; }
+.action-name { font-weight: 700; font-size: 15px; }
+.action-subtitle { font-size: 13px; color: var(--text-secondary); }
+.action-desc { font-size: 14px; color: #475467; margin-top: 6px; line-height: 1.5; }
+.action-meta { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
+.action-meta span { font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 4px; }
+
+/* ── Detail panel (contact profile) ── */
+.detail-panel {
+  display: none;
+  animation: slideIn .3s ease;
+}
+.detail-panel.active { display: block; }
+@keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+.profile-header {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+}
+.profile-avatar { width: 56px; height: 56px; font-size: 22px; }
+.profile-info { flex: 1; }
+.profile-info h2 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+.profile-info .subtitle { font-size: 14px; color: var(--text-secondary); }
+.profile-tags { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.profile-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; padding: 20px 24px; border-bottom: 1px solid var(--border); }
+.profile-stat { text-align: center; }
+.profile-stat .val { font-size: 20px; font-weight: 800; color: var(--blue); }
+.profile-stat .lbl { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+.timeline { padding: 20px 24px; }
+.timeline h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+.tl-item {
+  position: relative;
+  padding-left: 28px;
+  padding-bottom: 20px;
+  border-left: 2px solid var(--border);
+  margin-left: 6px;
+}
+.tl-item:last-child { border-left-color: transparent; padding-bottom: 0; }
+.tl-dot {
+  position: absolute;
+  left: -7px; top: 2px;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--blue);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px var(--blue-light);
+}
+.tl-item h4 { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.tl-item p { font-size: 13px; color: var(--text-secondary); }
+.tl-item .tl-date { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
+
+.analysis-block {
+  padding: 20px 24px;
+  border-top: 1px solid var(--border);
+}
+.analysis-block h3 { font-size: 16px; font-weight: 700; margin-bottom: 14px; }
+.analysis-row {
+  display: flex;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--border);
+  font-size: 14px;
+}
+.analysis-row:last-child { border-bottom: none; }
+.analysis-row strong { min-width: 100px; color: var(--text-secondary); flex-shrink: 0; }
+
+/* ── Inbox ── */
+.inbox-item {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  transition: background var(--transition);
+}
+.inbox-item:hover { background: #fafbfc; }
+.inbox-item:last-child { border-bottom: none; }
+.inbox-icon {
+  width: 36px; height: 36px;
+  border-radius: var(--radius-xs);
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.inbox-body { flex: 1; min-width: 0; }
+.inbox-title { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+.inbox-preview { font-size: 13px; color: var(--text-secondary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.inbox-tags { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+.inbox-tags .mini-tag {
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--blue-pale);
+  color: var(--blue);
+  font-weight: 600;
+}
+.inbox-time { font-size: 12px; color: var(--text-secondary); white-space: nowrap; flex-shrink: 0; }
+.inbox-status {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+.inbox-unread { background: var(--blue); }
+.inbox-read { background: var(--border); }
+
+/* ── Social feed ── */
+.feed-card {
+  padding: 20px;
+  margin-bottom: 12px;
+}
+.feed-header { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+.feed-platform {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+}
+.feed-linkedin { background: #e8f4fd; color: #0a66c2; }
+.feed-twitter { background: #e8f4fd; color: #1da1f2; }
+.feed-github { background: #f0f0f0; color: #333; }
+.feed-content { font-size: 14px; line-height: 1.6; margin-bottom: 14px; padding: 14px; background: var(--bg); border-radius: var(--radius-sm); }
+.feed-ai-box {
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--blue);
+  background: var(--blue-pale);
+}
+.feed-ai-box .ai-label { font-size: 12px; font-weight: 700; color: var(--blue); margin-bottom: 4px; }
+.feed-ai-box p { font-size: 13px; color: #344054; }
+
+/* ── AI Demo ── */
+.ai-demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.ai-input-panel, .ai-output-panel { padding: 20px; }
+.ai-input-panel h3, .ai-output-panel h3 { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+.ai-textarea {
+  width: 100%;
+  min-height: 320px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text);
+  resize: vertical;
+  background: var(--bg);
+  line-height: 1.6;
+}
+.ai-textarea:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(10,102,194,.1); }
+.ai-output-item {
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--border);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all .4s ease;
+}
+.ai-output-item.visible { opacity: 1; transform: translateY(0); }
+.ai-output-item:last-child { border-bottom: none; }
+.ai-output-item .ai-tag { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+.ai-output-item p { font-size: 14px; color: #475467; }
+.ai-loading {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 0;
+  color: var(--blue);
+  font-weight: 600;
+  font-size: 14px;
+}
+.ai-loading.show { display: flex; }
+.spinner {
+  width: 20px; height: 20px;
+  border: 3px solid var(--blue-pale);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Waiting view ── */
+.waiting-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.waiting-panel h3 {
+  font-size: 16px;
+  font-weight: 700;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.waiting-count {
+  background: var(--blue);
+  color: #fff;
+  font-size: 12px;
+  padding: 1px 8px;
+  border-radius: 99px;
+}
+.wait-item {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.wait-item:hover { background: #fafbfc; }
+.wait-item:last-child { border-bottom: none; }
+.wait-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.wait-person { font-weight: 700; font-size: 14px; }
+.wait-days { font-size: 12px; color: var(--red); font-weight: 700; }
+.wait-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; }
+.wait-action { font-size: 13px; color: var(--blue); font-weight: 600; }
+
+/* ── Draft modal ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 500;
+  justify-content: center;
+  align-items: center;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  width: 90%;
+  max-width: 560px;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: fadeIn .25s ease;
+}
+.modal-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-header h3 { font-size: 17px; font-weight: 700; }
+.modal-close {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg);
+  cursor: pointer;
+  font-size: 18px;
+  display: grid;
+  place-items: center;
+}
+.modal-body { padding: 20px 24px; }
+.modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+.draft-text {
+  width: 100%;
+  min-height: 140px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.6;
+  resize: vertical;
+}
+.draft-context { font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; padding: 12px; background: var(--bg); border-radius: var(--radius-sm); }
+
+/* ── Health score bar ── */
+.health-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+.health-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.health-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width .6s ease;
+}
+.health-score {
+  font-size: 18px;
+  font-weight: 800;
+  min-width: 36px;
+  text-align: right;
+}
+
+/* ── Commitment table ── */
+.commit-table { width: 100%; border-collapse: collapse; }
+.commit-table th, .commit-table td {
+  text-align: left;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  vertical-align: top;
+}
+.commit-table th {
+  background: var(--bg);
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+}
+.commit-table tr:last-child td { border-bottom: none; }
+.commit-table tr:hover td { background: rgba(10,102,194,.02); }
+.commit-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ── Quick-add form ── */
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+.form-input, .form-select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--card);
+  transition: border-color var(--transition);
+}
+.form-input:focus, .form-select:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(10,102,194,.1);
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+body.dark .form-input, body.dark .form-select { background: #0f1117; }
+
+/* ── Briefing modal ── */
+.briefing-section { margin-bottom: 16px; }
+.briefing-section h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--blue);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.briefing-list { list-style: none; padding: 0; }
+.briefing-list li {
+  padding: 6px 0;
+  font-size: 14px;
+  border-bottom: 1px dashed var(--border);
+  display: flex;
+  gap: 8px;
+}
+.briefing-list li:last-child { border-bottom: none; }
+
+/* ── Weekly report ── */
+.report-card { padding: 20px; margin-bottom: 16px; }
+.report-stat-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 12px; margin-bottom: 24px; }
+.report-stat { text-align: center; padding: 16px; background: var(--bg); border-radius: var(--radius-sm); }
+.report-stat .val { font-size: 24px; font-weight: 800; color: var(--blue); }
+.report-stat .lbl { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+.report-contact-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.report-contact-row:last-child { border-bottom: none; }
+
+/* ── FAB (floating action button) ── */
+.fab {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  box-shadow: var(--shadow-lg);
+  display: grid;
+  place-items: center;
+  z-index: 80;
+  transition: transform var(--transition), background var(--transition);
+}
+.fab:hover { transform: scale(1.1); background: var(--blue-hover); }
+
+/* ── Back button ── */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 6px 0;
+  margin-bottom: 16px;
+  font-weight: 600;
+  transition: color var(--transition);
+}
+.back-btn:hover { color: var(--blue); }
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .grid-4 { grid-template-columns: repeat(2,1fr); }
+  .ai-demo-grid, .waiting-grid { grid-template-columns: 1fr; }
+  .profile-stats { grid-template-columns: repeat(2,1fr); }
+  .report-stat-grid { grid-template-columns: repeat(3,1fr); }
+}
+/* ── Dark mode ── */
+body.dark {
+  --bg: #0f1117;
+  --card: #1a1d28;
+  --text: #e4e7ec;
+  --text-secondary: #98a2b3;
+  --border: #2d3142;
+  --blue-pale: rgba(10,102,194,.15);
+  --blue-light: rgba(10,102,194,.2);
+  --red-bg: rgba(180,35,24,.15);
+  --yellow-bg: rgba(183,121,31,.15);
+  --green-bg: rgba(5,118,66,.15);
+  --purple-bg: rgba(105,65,198,.15);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.2);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.3);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,.4);
+}
+body.dark .topbar { background: rgba(26,29,40,.92); }
+body.dark .ai-textarea,
+body.dark .draft-text { background: #0f1117; color: var(--text); }
+body.dark .feed-content { background: #0f1117; }
+body.dark .draft-context { background: #0f1117; }
+body.dark .modal { background: var(--card); }
+body.dark .inbox-item:hover,
+body.dark .action-card:hover,
+body.dark .wait-item:hover { background: rgba(255,255,255,.03); }
+body.dark .mini-tag { background: rgba(10,102,194,.2); }
+.dark-toggle {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--card);
+  cursor: pointer;
+  font-size: 16px;
+  display: grid;
+  place-items: center;
+  transition: all var(--transition);
+}
+.dark-toggle:hover { border-color: var(--blue); }
+
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .mobile-toggle { display: grid; }
+  .mobile-overlay.show { display: block; }
+  .main { margin-left: 0; }
+  .topbar { padding: 14px 16px; padding-left: 56px; }
+  .content { padding: 16px; }
+  .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Mobile toggle -->
+<button class="mobile-toggle" onclick="toggleSidebar()">☰</button>
+<div class="mobile-overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-logo">LB</div>
+    <span>LinkBase 常联系</span>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-item active" data-page="dashboard" onclick="navigateTo('dashboard')">
+      <div class="nav-icon">📊</div>
+      <span>今日行动中心</span>
+      <span class="nav-badge">6</span>
+    </div>
+    <div class="nav-item" data-page="inbox" onclick="navigateTo('inbox')">
+      <div class="nav-icon">📥</div>
+      <span>信息收件箱</span>
+      <span class="nav-badge">32</span>
+    </div>
+    <div class="nav-item" data-page="contacts" onclick="navigateTo('contacts')">
+      <div class="nav-icon">👤</div>
+      <span>联系人管理</span>
+    </div>
+    <div class="nav-item" data-page="waiting" onclick="navigateTo('waiting')">
+      <div class="nav-icon">⏳</div>
+      <span>谁在等我 / 我在等谁</span>
+    </div>
+    <div class="nav-item" data-page="commitments" onclick="navigateTo('commitments')">
+      <div class="nav-icon">📋</div>
+      <span>承诺清单</span>
+      <span class="nav-badge">5</span>
+    </div>
+    <div class="nav-item" data-page="social" onclick="navigateTo('social')">
+      <div class="nav-icon">🌐</div>
+      <span>关注账号动态</span>
+      <span class="nav-badge">3</span>
+    </div>
+    <div class="nav-item" data-page="weekly" onclick="navigateTo('weekly')">
+      <div class="nav-icon">📈</div>
+      <span>周报</span>
+    </div>
+    <div class="nav-item" data-page="ai-demo" onclick="navigateTo('ai-demo')">
+      <div class="nav-icon">🤖</div>
+      <span>AI 分析演示</span>
+    </div>
+    <div class="nav-item" data-page="about" onclick="navigateTo('about')">
+      <div class="nav-icon">ℹ️</div>
+      <span>关于产品</span>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    © 2026 LinkBase 常联系<br>TRAE AI 创造力大赛
+  </div>
+</aside>
+
+<!-- Main content -->
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-title" id="topbarTitle">今日行动中心</div>
+    <div class="topbar-right">
+      <div class="topbar-time" id="topbarTime"></div>
+      <button class="dark-toggle" onclick="toggleDark()" title="切换深色/浅色模式" id="darkBtn">🌙</button>
+      <div class="topbar-avatar">我</div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- ========== PAGE: Dashboard ========== -->
+    <div class="page active" id="page-dashboard">
+      <div class="section-header">
+        <h2>早上好！以下是今日需要关注的关系事项</h2>
+        <p>AI 已完成晨间分析 · 基于邮件、日历、沟通记录和社媒动态综合判断</p>
+      </div>
+
+      <div class="grid-4" style="margin-bottom:20px">
+        <div class="card metric-card">
+          <div class="num">32</div>
+          <div class="label">新增信息</div>
+          <div class="trend trend-up">↑ 较昨日 +8</div>
+        </div>
+        <div class="card metric-card">
+          <div class="num">11</div>
+          <div class="label">识别联系人</div>
+          <div class="trend trend-up">↑ 新增 2 人</div>
+        </div>
+        <div class="card metric-card">
+          <div class="num">6</div>
+          <div class="label">待跟进事项</div>
+          <div class="trend trend-down">2 项高优先级</div>
+        </div>
+        <div class="card metric-card">
+          <div class="num">3</div>
+          <div class="label">关系事件</div>
+          <div class="trend trend-up">1 个社媒触发</div>
+        </div>
+      </div>
+
+      <div class="section-header"><h2>高优先级跟进</h2></div>
+      <div class="card" id="dashboardActions"></div>
+    </div>
+
+    <!-- ========== PAGE: Inbox ========== -->
+    <div class="page" id="page-inbox">
+      <div class="section-header">
+        <h2>信息收件箱</h2>
+        <p>自动汇总多个来源的信息，AI 提取联系人、事件、承诺和时间节点</p>
+      </div>
+      <div class="filter-bar" id="inboxFilters"></div>
+      <div class="card" id="inboxList"></div>
+    </div>
+
+    <!-- ========== PAGE: Contacts ========== -->
+    <div class="page" id="page-contacts">
+      <div id="contactListView">
+        <div class="section-header">
+          <h2>联系人管理</h2>
+          <p>重要联系人的持久化关系档案，越用越懂上下文</p>
+        </div>
+        <div class="filter-bar" id="contactFilters"></div>
+        <div class="grid-3" id="contactGrid"></div>
+      </div>
+      <div class="detail-panel" id="contactDetail"></div>
+    </div>
+
+    <!-- ========== PAGE: Waiting ========== -->
+    <div class="page" id="page-waiting">
+      <div class="section-header">
+        <h2>谁在等我 / 我在等谁</h2>
+        <p>双向追踪待处理和待反馈事项，避免遗漏</p>
+      </div>
+      <div class="waiting-grid">
+        <div class="card waiting-panel">
+          <h3>🔴 谁在等我 <span class="waiting-count" id="waitMeCount"></span></h3>
+          <div id="waitingForMe"></div>
+        </div>
+        <div class="card waiting-panel">
+          <h3>🟡 我在等谁 <span class="waiting-count" id="waitThemCount"></span></h3>
+          <div id="waitingForThem"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== PAGE: Social ========== -->
+    <div class="page" id="page-social">
+      <div class="section-header">
+        <h2>关注账号动态</h2>
+        <p>关注重要联系人、公司和项目的公开动态，AI 识别关系事件并推荐行动</p>
+      </div>
+      <div id="socialFeed"></div>
+    </div>
+
+    <!-- ========== PAGE: AI Demo ========== -->
+    <div class="page" id="page-ai-demo">
+      <div class="section-header">
+        <h2>AI 定时分析演示</h2>
+        <p>模拟系统从多个信息源中提取信号，并生成行动建议和消息草稿</p>
+      </div>
+      <div class="ai-demo-grid">
+        <div class="card ai-input-panel">
+          <h3>输入：自动汇总的信息</h3>
+          <textarea class="ai-textarea" id="aiInput">邮件：王总说希望本周五前收到 AI 运维工具的本地部署方案，重点关注数据安全、权限隔离和部署成本。
+
+日历：今天下午 3 点与陈工进行技术对接会议，主题是接口文档和测试环境。
+
+历史记录：上周已向 Lily HR 发送面试补充材料，目前 7 天未收到反馈。
+
+社媒动态：Alex 最近在 LinkedIn 发布观点，提到他正在关注企业 AI 工具的真实落地案例。
+
+关系历史：Alex 上次沟通时希望看到产品 Demo 和真实试点反馈。
+
+邮件：张瑶（YC合伙人）转发了一篇关于 AI CRM 的行业分析，询问是否有兴趣交流。
+
+聊天记录：老李（前同事）提到他最近换了工作，在新公司负责 AI 中台建设。</textarea>
+          <button class="btn btn-primary" style="margin-top:12px;width:100%" onclick="runAIAnalysis()">▶ 运行 AI 分析</button>
+        </div>
+        <div class="card ai-output-panel">
+          <h3>输出：今日行动中心</h3>
+          <div class="ai-loading" id="aiLoading">
+            <div class="spinner"></div>
+            <span>AI 正在分析信息，提取关系信号...</span>
+          </div>
+          <div id="aiOutput"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== PAGE: Commitments ========== -->
+    <div class="page" id="page-commitments">
+      <div class="section-header">
+        <h2>承诺清单</h2>
+        <p>追踪双方承诺过的事，减少"答应了但忘做"的情况</p>
+      </div>
+      <div class="filter-bar" id="commitFilters"></div>
+      <div class="card" style="overflow-x:auto">
+        <table class="commit-table" id="commitTable"></table>
+      </div>
+    </div>
+
+    <!-- ========== PAGE: Weekly Report ========== -->
+    <div class="page" id="page-weekly">
+      <div class="section-header">
+        <h2>本周关系进展报告</h2>
+        <p>AI 自动生成 · 2026年6月16日 - 6月20日</p>
+      </div>
+      <div id="weeklyReport"></div>
+    </div>
+
+    <!-- ========== PAGE: About ========== -->
+    <div class="page" id="page-about">
+      <div class="section-header">
+        <h2>关于 LinkBase 常联系</h2>
+        <p>AI 个人关系管理助手</p>
+      </div>
+      <div class="card" style="padding:28px;max-width:800px">
+        <h3 style="font-size:20px;margin-bottom:16px;color:var(--blue)">产品定位</h3>
+        <p style="font-size:15px;line-height:1.8;margin-bottom:20px">
+          LinkBase 常联系是一款面向职场个人的 AI 关系管理助手。自动汇总邮件、日历、会议纪要、沟通记录和关注账号动态，帮用户发现<strong>谁在等你、你在等谁、关系发生了什么变化，以及下一步该做什么</strong>。
+        </p>
+        <h3 style="font-size:18px;margin-bottom:14px">四段式产品逻辑</h3>
+        <div class="grid-4" style="margin-bottom:24px">
+          <div style="text-align:center;padding:16px">
+            <div style="font-size:28px;margin-bottom:8px">📥</div>
+            <div style="font-weight:700;margin-bottom:4px">信息收件箱</div>
+            <div style="font-size:13px;color:var(--text-secondary)">汇总多来源信息</div>
+          </div>
+          <div style="text-align:center;padding:16px">
+            <div style="font-size:28px;margin-bottom:8px">🌐</div>
+            <div style="font-weight:700;margin-bottom:4px">动态关注器</div>
+            <div style="font-size:13px;color:var(--text-secondary)">追踪公开动态</div>
+          </div>
+          <div style="text-align:center;padding:16px">
+            <div style="font-size:28px;margin-bottom:8px">🔗</div>
+            <div style="font-weight:700;margin-bottom:4px">关系持久化分析</div>
+            <div style="font-size:13px;color:var(--text-secondary)">长期关系画像</div>
+          </div>
+          <div style="text-align:center;padding:16px">
+            <div style="font-size:28px;margin-bottom:8px">📊</div>
+            <div style="font-weight:700;margin-bottom:4px">今日行动中心</div>
+            <div style="font-size:13px;color:var(--text-secondary)">生成行动清单</div>
+          </div>
+        </div>
+        <h3 style="font-size:18px;margin-bottom:14px">适用人群</h3>
+        <div class="grid-3" style="margin-bottom:24px">
+          <div style="padding:14px;background:var(--bg);border-radius:var(--radius-sm)"><strong>创业者</strong><br><span style="font-size:13px;color:var(--text-secondary)">维护投资人、客户、合作伙伴</span></div>
+          <div style="padding:14px;background:var(--bg);border-radius:var(--radius-sm)"><strong>销售 / BD</strong><br><span style="font-size:13px;color:var(--text-secondary)">追踪客户需求和关键联系人</span></div>
+          <div style="padding:14px;background:var(--bg);border-radius:var(--radius-sm)"><strong>求职者</strong><br><span style="font-size:13px;color:var(--text-secondary)">管理 HR、面试官和目标公司</span></div>
+          <div style="padding:14px;background:var(--bg);border-radius:var(--radius-sm)"><strong>自由职业者</strong><br><span style="font-size:13px;color:var(--text-secondary)">维护老客户和合作关系</span></div>
+          <div style="padding:14px;background:var(--bg);border-radius:var(--radius-sm)"><strong>投资 / 咨询从业者</strong><br><span style="font-size:13px;color:var(--text-secondary)">长期关注创始人和行业动态</span></div>
+          <div style="padding:14px;background:var(--bg);border-radius:var(--radius-sm)"><strong>职场人</strong><br><span style="font-size:13px;color:var(--text-secondary)">记录导师、同事和沟通历史</span></div>
+        </div>
+        <h3 style="font-size:18px;margin-bottom:14px">核心价值</h3>
+        <p style="font-size:15px;line-height:1.8;padding:16px;background:linear-gradient(135deg,var(--blue) 0%,#084c91 100%);color:#fff;border-radius:var(--radius);font-weight:600">
+          让关系管理从"靠记忆"变成"靠系统"，从"一次性记录"变成"长期关系分析"。
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Draft Modal -->
+<div class="modal-overlay" id="draftModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="draftModalTitle">AI 消息草稿</h3>
+      <button class="modal-close" onclick="closeDraftModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="draft-context" id="draftContext"></div>
+      <textarea class="draft-text" id="draftText"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeDraftModal()">关闭</button>
+      <button class="btn btn-primary" onclick="copyDraft()">复制草稿</button>
+    </div>
+  </div>
+</div>
+
+<!-- FAB: Quick Add -->
+<button class="fab" onclick="openQuickAdd()" title="快速记录">＋</button>
+
+<!-- Quick Add Modal -->
+<div class="modal-overlay" id="quickAddModal">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header">
+      <h3 id="quickAddTitle">快速记录沟通</h3>
+      <button class="modal-close" onclick="closeQuickAdd()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="filter-bar" style="margin-bottom:16px">
+        <div class="filter-tab active" onclick="switchQuickTab('record',this)">记录沟通</div>
+        <div class="filter-tab" onclick="switchQuickTab('contact',this)">添加联系人</div>
+      </div>
+      <div id="quickTabRecord">
+        <div class="form-group">
+          <label>联系人</label>
+          <select class="form-select" id="qaContact"></select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>沟通方式</label>
+            <select class="form-select" id="qaChannel">
+              <option>邮件</option><option>电话</option><option>会议</option><option>聊天</option><option>社媒</option><option>面对面</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>日期</label>
+            <input type="date" class="form-input" id="qaDate"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>沟通内容摘要</label>
+          <textarea class="form-input" id="qaSummary" rows="3" placeholder="简要记录本次沟通的要点、对方关注点、约定的后续动作..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>承诺事项（可选）</label>
+          <input class="form-input" id="qaCommitment" placeholder="例如：下周一前发送方案"/>
+        </div>
+      </div>
+      <div id="quickTabContact" style="display:none">
+        <div class="form-row">
+          <div class="form-group">
+            <label>姓名</label>
+            <input class="form-input" id="qaName" placeholder="联系人姓名"/>
+          </div>
+          <div class="form-group">
+            <label>公司</label>
+            <input class="form-input" id="qaCompany" placeholder="所在公司"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>职位</label>
+            <input class="form-input" id="qaTitle" placeholder="职位"/>
+          </div>
+          <div class="form-group">
+            <label>关系类型</label>
+            <select class="form-select" id="qaType">
+              <option>客户</option><option>投资人</option><option>HR</option><option>合作方</option><option>人脉</option><option>同事</option><option>其他</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>备注</label>
+          <textarea class="form-input" id="qaNotes" rows="2" placeholder="如何认识、初始关注点..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeQuickAdd()">取消</button>
+      <button class="btn btn-primary" onclick="submitQuickAdd()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Briefing Modal -->
+<div class="modal-overlay" id="briefingModal">
+  <div class="modal" style="max-width:580px">
+    <div class="modal-header">
+      <h3 id="briefingTitle">📋 会前简报</h3>
+      <button class="modal-close" onclick="closeBriefing()">×</button>
+    </div>
+    <div class="modal-body" id="briefingBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeBriefing()">关闭</button>
+      <button class="btn btn-primary" onclick="closeBriefing()">已准备好</button>
+    </div>
+  </div>
+</div>
+
+<!-- Success Toast -->
+<div id="toast" style="display:none;position:fixed;bottom:90px;right:28px;background:var(--green);color:#fff;padding:12px 20px;border-radius:var(--radius-sm);font-weight:600;font-size:14px;box-shadow:var(--shadow-lg);z-index:300;animation:fadeIn .3s ease"></div>
+
+<script>
+// ━━━━━━━━━━━━━━━━━━━━ Mock Data ━━━━━━━━━━━━━━━━━━━━
+const CONTACTS = [
+  {
+    id: 'wang', name: '王总', company: 'XX制造', title: 'IT 负责人',
+    type: '客户', avatar: '王', avatarClass: 'avatar-red',
+    stage: '方案评估', lastContact: '2 天前', frequency: '每周', health: 72,
+    interests: ['数据安全', '本地部署', '权限隔离', '部署成本'],
+    timeline: [
+      { date: '6月10日', title: '首次电话沟通', desc: '了解 AI 运维工具需求，对方重点关注数据安全和本地部署。' },
+      { date: '6月14日', title: '线上会议', desc: '演示了 SaaS 版本，王总要求提供本地部署方案和成本估算。' },
+      { date: '6月18日', title: '邮件跟进', desc: '王总发邮件催促本地部署方案，希望本周五前收到。' }
+    ],
+    analysis: {
+      stage: '方案评估 → 即将进入采购决策',
+      interest: '数据安全 > 本地部署 > 部署成本',
+      rhythm: '当前处于密集沟通期，需在 2 天内回复',
+      opportunity: '客户连续两次提到本地部署，说明需求明确，建议推进技术演示',
+      risk: '截止时间临近，延迟回复可能导致客户转向竞品'
+    }
+  },
+  {
+    id: 'alex', name: 'Alex', company: '某VC', title: '投资人',
+    type: '投资人', avatar: 'A', avatarClass: 'avatar-blue',
+    stage: '长期维护', lastContact: '8 天前', frequency: '2-4 周', health: 65,
+    interests: ['企业 AI 工具', '真实落地案例', 'Demo', '试点反馈'],
+    timeline: [
+      { date: '5月28日', title: '首次沟通', desc: '对企业 AI 工具和开发者效率方向感兴趣，希望看到实际落地。' },
+      { date: '6月12日', title: '项目更新', desc: '发送了第一个 Demo 录屏，对方建议补充真实试点反馈。' },
+      { date: '6月20日', title: '社媒动态触发', desc: '公开动态提到关注企业 AI 工具落地，与当前项目方向匹配。' }
+    ],
+    analysis: {
+      stage: '长期维护 / 潜在投资沟通',
+      interest: '真实 Demo > 试点反馈 > 企业落地 > 开发效率',
+      rhythm: '2-4 周同步一次实质进展，不宜频繁打扰',
+      opportunity: '社媒动态与项目进展匹配，可自然发送一次更新',
+      risk: '如果只发概念性内容会降低信任，需要附带真实数据'
+    }
+  },
+  {
+    id: 'lily', name: 'Lily', company: '某科技公司', title: 'HR',
+    type: 'HR', avatar: 'L', avatarClass: 'avatar-green',
+    stage: '等待反馈', lastContact: '7 天前', frequency: '按需', health: 45,
+    interests: ['技术人才', '面试流程', '薪酬范围'],
+    timeline: [
+      { date: '6月5日', title: '初次面试', desc: '一面通过，HR 要求补充作品集和项目文档。' },
+      { date: '6月13日', title: '发送补充材料', desc: '通过邮件发送面试补充材料和作品集。' },
+      { date: '6月20日', title: '等待 7 天', desc: '至今未收到反馈，可能需要主动询问。' }
+    ],
+    analysis: {
+      stage: '等待反馈（已超出常规回复周期）',
+      interest: '技术能力 > 项目经验 > 团队协作',
+      rhythm: '当前已等待 7 天，建议发一次礼貌询问',
+      opportunity: '该公司正在扩招 AI 方向，岗位契合度高',
+      risk: '长时间不跟进可能被视为缺乏诚意'
+    }
+  },
+  {
+    id: 'chen', name: '陈工', company: '合作方科技', title: '技术负责人',
+    type: '合作方', avatar: '陈', avatarClass: 'avatar-yellow',
+    stage: '技术对接', lastContact: '3 天前', frequency: '每周', health: 82,
+    interests: ['接口文档', '测试环境', '排期', 'API 设计'],
+    timeline: [
+      { date: '6月8日', title: '合作启动会', desc: '确定合作方向，分工接口开发和数据同步。' },
+      { date: '6月15日', title: '第一版接口文档', desc: '发送初版接口文档，陈工反馈了 5 个修改建议。' },
+      { date: '6月17日', title: '修订接口', desc: '完成修订，约定今天下午开技术对接会。' }
+    ],
+    analysis: {
+      stage: '技术对接 → 联调阶段',
+      interest: '接口文档 > 测试环境 > 排期',
+      rhythm: '当前密集协作期，保持每周 1-2 次沟通',
+      opportunity: '合作推进顺利，有望月底前完成联调',
+      risk: '测试环境尚未就绪，可能影响整体排期'
+    }
+  },
+  {
+    id: 'zhang', name: '张瑶', company: 'YC', title: '合伙人',
+    type: '投资人', avatar: '张', avatarClass: 'avatar-purple',
+    stage: '初次接触', lastContact: '1 天前', frequency: '待定', health: 58,
+    interests: ['AI CRM', '行业分析', 'SaaS', '个人效率工具'],
+    timeline: [
+      { date: '6月19日', title: '转发行业报告', desc: '张瑶转发了一篇关于 AI CRM 的行业分析，并询问是否有兴趣交流。' }
+    ],
+    analysis: {
+      stage: '初次接触（对方主动发起）',
+      interest: 'AI CRM > 行业趋势 > SaaS 商业模式',
+      rhythm: '对方主动发起，建议 1-2 天内回复',
+      opportunity: 'YC 合伙人主动关注，说明赛道被认可，值得深入交流',
+      risk: '延迟回复会失去初始好感'
+    }
+  },
+  {
+    id: 'laoli', name: '老李', company: '新公司', title: 'AI 中台负责人',
+    type: '人脉', avatar: '李', avatarClass: 'avatar-blue',
+    stage: '重新激活', lastContact: '2 天前', frequency: '季度', health: 55,
+    interests: ['AI 中台', '技术选型', '团队建设'],
+    timeline: [
+      { date: '2025年', title: '前同事关系', desc: '在原公司共事 2 年，技术方向接近。' },
+      { date: '6月18日', title: '重新联系', desc: '老李主动联系，提到换了新工作，在新公司负责 AI 中台建设。' }
+    ],
+    analysis: {
+      stage: '重新激活（由弱关系变为潜在合作关系）',
+      interest: 'AI 中台 > 技术选型 > 行业交流',
+      rhythm: '对方主动联系，建议近期安排一次详聊',
+      opportunity: '前同事信任基础好，新岗位可能带来产品合作或推荐机会',
+      risk: '如果不趁热打铁可能又会失联'
+    }
+  }
+];
+
+const INBOX_ITEMS = [
+  { id: 1, source: '邮件', icon: '📧', iconBg: '#fee4e2', title: '王总：关于本地部署方案', preview: '你好，我们团队已经评估了你们的 SaaS 方案，但考虑到数据安全合规要求，希望本周五前收到本地部署版本的方案说明，重点关注数据安全、权限隔离和部署成本三个方面。', time: '今天 09:15', unread: true, tags: ['王总', 'XX制造', '本地部署', '本周五截止'], contact: 'wang' },
+  { id: 2, source: '日历', icon: '📅', iconBg: '#e8f4fd', title: '技术对接会 - 陈工', preview: '今天 15:00-16:00，主题：接口文档修订确认、测试环境搭建、Q3 排期对齐。参会人：陈工、刘伟。', time: '今天 15:00', unread: true, tags: ['陈工', '合作方科技', '接口文档', '测试环境'], contact: 'chen' },
+  { id: 3, source: '邮件', icon: '📧', iconBg: '#fee4e2', title: 'Lily：Re: 面试补充材料', preview: '（7 天前发送的面试补充材料，至今未收到回复）', time: '6月13日', unread: false, tags: ['Lily', 'HR', '面试', '7天未回复'], contact: 'lily' },
+  { id: 4, source: '社媒', icon: '🌐', iconBg: '#e8f4fd', title: 'Alex 在 LinkedIn 发布新观点', preview: 'Alex 发帖称："最近和几家做企业级 AI 工具的团队深聊，发现真正打动客户的不是模型能力，而是落地场景的深度理解。看好能拿出真实 ROI 数据的团队。"', time: '今天 08:30', unread: true, tags: ['Alex', '投资人', 'AI 工具落地', '社媒动态'], contact: 'alex' },
+  { id: 5, source: '邮件', icon: '📧', iconBg: '#fee4e2', title: '张瑶（YC）转发行业分析', preview: '你好，最近在研究个人关系管理 + AI 的方向，这篇文章分析了 AI CRM 的市场机会，和你们做的方向很像。有空交流一下吗？', time: '昨天 16:20', unread: true, tags: ['张瑶', 'YC', 'AI CRM', '行业分析'], contact: 'zhang' },
+  { id: 6, source: '聊天', icon: '💬', iconBg: '#dcfae6', title: '老李：换工作通知', preview: '最近换到新公司了，负责 AI 中台建设。记得我们之前聊过的智能分析方案吗？现在这边可能用得上，有空聊聊。', time: '2 天前', unread: false, tags: ['老李', '前同事', 'AI 中台', '合作机会'], contact: 'laoli' },
+  { id: 7, source: '会议纪要', icon: '📝', iconBg: '#fef0c7', title: '6/17 接口对接会纪要', preview: '【结论】1. 接口文档完成 5 处修订；2. 测试环境约定下周一搭建完成；3. 陈工负责数据同步模块，约定周五前提交初版。', time: '3 天前', unread: false, tags: ['陈工', '接口文档', '测试环境', '周五截止'], contact: 'chen' },
+  { id: 8, source: '文件', icon: '📎', iconBg: '#f4f3ff', title: '本地部署方案 v0.9（草稿）', preview: '内部草稿版本，包含架构图、安全方案和成本估算。待补充权限隔离细节后可发送给王总。', time: '昨天 14:00', unread: false, tags: ['本地部署', '方案', '内部文件'], contact: 'wang' },
+  { id: 9, source: '社媒', icon: '🌐', iconBg: '#e8f4fd', title: 'XX制造官方号发布招聘信息', preview: 'XX制造发布多个 AI 和数字化岗位招聘，包括 AI 运维工程师和数据安全架构师，说明公司正在加大 AI 投入。', time: '今天 10:00', unread: true, tags: ['XX制造', '招聘', 'AI 运维', '公司动态'], contact: 'wang' },
+  { id: 10, source: '日历', icon: '📅', iconBg: '#e8f4fd', title: '周五 Review：本周关系进展', preview: '本周五 17:00，回顾本周关系事项进展，整理下周重点跟进。', time: '本周五', unread: false, tags: ['周报', '复盘'], contact: null }
+];
+
+const WAITING_FOR_ME = [
+  { person: '王总', company: 'XX制造', desc: '等待本地部署方案（数据安全、权限隔离、部署成本）', days: '截止周五', urgency: 'high', action: '今天完成方案修订并发送', contact: 'wang', draft: '王总好，本地部署方案已整理完毕，包含架构图、安全方案（数据加密和权限隔离）以及成本估算。附件请查收。\n\n主要内容：\n1. 部署架构：支持私有化单机和集群两种模式\n2. 数据安全：端到端加密 + 角色权限隔离\n3. 成本估算：含硬件和运维成本明细\n\n如有问题随时沟通，后续可安排一次技术演示。' },
+  { person: '张瑶', company: 'YC', desc: '询问是否有兴趣交流 AI CRM 方向', days: '1 天前', urgency: 'high', action: '今天回复并约时间', contact: 'zhang', draft: '张瑶你好，感谢转发这篇文章，和我们的方向确实非常契合。\n\n我们正在做的 LinkBase 常联系，核心思路是用 AI 自动汇总邮件、日历、沟通记录和社媒动态，帮个人用户做关系持久化分析——让关系管理从"靠记忆"变成"靠系统"。\n\n目前已有初版 Demo，方便的话这周约个时间简短聊聊？' },
+  { person: '陈工', company: '合作方科技', desc: '今天下午 3 点技术对接会，需要准备接口修订文档', days: '今天 15:00', urgency: 'mid', action: '会前准备接口文档和问题清单', contact: 'chen', draft: null }
+];
+
+const WAITING_FOR_THEM = [
+  { person: 'Lily', company: '某科技公司', desc: '面试补充材料已发送，等待 HR 反馈', days: '已等 7 天', urgency: 'mid', action: '发送礼貌进度询问', contact: 'lily', draft: 'Lily 你好，上次发送的面试补充材料不知道是否已收到？\n\n如果还需要补充其他内容，请随时告诉我，我会尽快准备。期待后续沟通。' },
+  { person: '陈工', company: '合作方科技', desc: '数据同步模块初版，约定周五前提交', days: '还剩 2 天', urgency: 'low', action: '周五前确认是否按时交付', contact: 'chen', draft: null },
+  { person: 'Alex', company: '某VC', desc: '上次 Demo 后等待更多试点反馈需求', days: '已等 8 天', urgency: 'low', action: '结合社媒触发主动发送更新', contact: 'alex', draft: 'Alex 你好，看到你最近提到关注企业 AI 工具的真实落地。我这边刚整理了一版产品 Demo 和试点反馈数据，和上次你提到的方向比较相关。\n\n简要更新：\n- 产品 Demo 已完成核心流程\n- 首批试点用户反馈：跟进效率提升约 40%\n- 用户留存：试用 2 周后日活保持 70%+\n\n方便的话我发你一份简短材料？' }
+];
+
+const SOCIAL_FEEDS = [
+  {
+    person: 'Alex', company: '某VC · 投资人', avatar: 'A', avatarClass: 'avatar-blue',
+    platform: 'LinkedIn', platformClass: 'feed-linkedin',
+    time: '今天 08:30',
+    content: '最近和几家做企业级 AI 工具的团队深聊，发现真正打动客户的不是模型能力，而是落地场景的深度理解。看好能拿出真实 ROI 数据的团队。\n\n#企业AI #产品落地',
+    aiEvent: '投资人关注方向变化',
+    aiAnalysis: 'Alex 的观点与上次沟通中提到的"希望看到真实落地"一致。当前项目已有 Demo 和试点数据，适合发送一次简短进展更新。建议附带 ROI 数据和试点用户反馈。',
+    aiAction: '发送产品 Demo + 试点反馈 + ROI 数据',
+    contact: 'alex'
+  },
+  {
+    person: 'XX制造', company: '官方账号', avatar: 'X', avatarClass: 'avatar-red',
+    platform: 'LinkedIn', platformClass: 'feed-linkedin',
+    time: '今天 10:00',
+    content: '【招聘】XX制造数字化部门扩招！现招聘 AI 运维工程师、数据安全架构师、DevOps 工程师等多个岗位。我们正在加速推进 AI 在制造业的落地应用。\n\n欢迎有兴趣的同学投递简历。',
+    aiEvent: '客户公司业务扩张信号',
+    aiAnalysis: 'XX制造正在扩招 AI 和数字化团队，说明公司在加大 AI 投入。结合王总正在评估本地部署方案，这是一个积极信号——客户的采购意愿可能较强。',
+    aiAction: '加速推进方案发送，可在沟通中提及对 AI 运维场景的理解',
+    contact: 'wang'
+  },
+  {
+    person: '老李', company: '新公司 · AI 中台负责人', avatar: '李', avatarClass: 'avatar-blue',
+    platform: 'X', platformClass: 'feed-twitter',
+    time: '昨天 20:15',
+    content: '入职第三周，AI 中台项目终于启动了。从数据采集、模型服务到业务对接，一个小团队搞定全链路。创业的感觉又回来了。',
+    aiEvent: '前同事岗位变动',
+    aiAnalysis: '老李在新公司负责 AI 中台全链路建设，技术选型阶段可能需要外部工具和合作。之前有同事信任基础，适合近期约一次深入交流。',
+    aiAction: '近期约一次详聊，了解技术选型需求',
+    contact: 'laoli'
+  }
+];
+
+const AI_ANALYSIS_RESULTS = [
+  { tag: '🔴 谁在等我', tagClass: 'tag-red', text: '王总正在等待本地部署方案（数据安全 + 权限隔离 + 部署成本），截止本周五。关系阶段：方案评估，优先级 92/100。建议今天发送。' },
+  { tag: '🔴 谁在等我', tagClass: 'tag-red', text: '张瑶（YC 合伙人）主动发起 AI CRM 方向交流邀请。对方主动联系 = 高价值机会，建议 1 天内回复并约时间。' },
+  { tag: '🟡 社媒触发', tagClass: 'tag-yellow', text: 'Alex 最新动态与企业 AI 落地相关，和历史沟通兴趣匹配。建议发送 Demo 进展 + ROI 数据 + 试点用户反馈。' },
+  { tag: '🟢 会前简报', tagClass: 'tag-green', text: '15:00 与陈工技术对接会。议题：接口文档修订确认、测试环境搭建、Q3 排期。建议提前准备修订文档和问题清单。上次未决事项：数据同步模块性能指标。' },
+  { tag: '🟡 我在等谁', tagClass: 'tag-yellow', text: 'Lily HR 已 7 天未回复面试补充材料，超出常规回复周期。建议发送一次礼貌进度询问。' },
+  { tag: '🔵 关系激活', tagClass: 'tag-blue', text: '前同事老李主动联系，在新公司负责 AI 中台建设。信任基础 + 需求匹配，建议近期约一次详聊，了解技术选型需求和潜在合作机会。' },
+  { tag: '🟣 持久化分析', tagClass: 'tag-purple', text: '王总：推进期（方案评估 → 采购决策）。Alex：长期维护期（社媒触发 → 适合更新）。Lily：等待反馈期（超时 → 建议跟进）。张瑶：初次接触（对方主动 → 高优回复）。老李：重新激活（旧关系 → 新机会）。' },
+  { tag: '✉️ 消息草稿', tagClass: 'tag-blue', text: 'Alex 你好，看到你最近提到关注企业 AI 工具的真实落地。我这边刚整理了一版产品 Demo 和首批试点用户反馈（跟进效率提升约 40%），和上次你提到的方向比较相关，方便的话我发你一版简短材料看看。' }
+];
+
+const COMMITMENTS = [
+  { id: 1, dir: 'mine', person: '王总', contact: 'wang', what: '发送本地部署方案（数据安全 + 权限隔离 + 成本估算）', deadline: '本周五（6月20日）', status: 'overdue', source: '6/14 线上会议' },
+  { id: 2, dir: 'mine', person: '张瑶', contact: 'zhang', what: '回复 AI CRM 方向交流邀请并约时间', deadline: '6月21日', status: 'pending', source: '6/19 邮件' },
+  { id: 3, dir: 'mine', person: 'Alex', contact: 'alex', what: '发送产品 Demo + 试点反馈数据', deadline: '本周内', status: 'pending', source: '6/12 项目更新' },
+  { id: 4, dir: 'theirs', person: '陈工', contact: 'chen', what: '提交数据同步模块初版代码', deadline: '本周五（6月20日）', status: 'pending', source: '6/17 对接会纪要' },
+  { id: 5, dir: 'theirs', person: 'Lily', contact: 'lily', what: '回复面试补充材料反馈', deadline: '已超时 7 天', status: 'overdue', source: '6/13 面试流程' },
+  { id: 6, dir: 'mine', person: '陈工', contact: 'chen', what: '准备接口修订文档和问题清单', deadline: '今天 15:00 前', status: 'pending', source: '6/17 对接会纪要' },
+  { id: 7, dir: 'mine', person: '老李', contact: 'laoli', what: '约一次详聊了解 AI 中台选型需求', deadline: '本周内', status: 'pending', source: '6/18 聊天' },
+  { id: 8, dir: 'theirs', person: '王总', contact: 'wang', what: '确认技术演示时间和参会人', deadline: '方案发送后', status: 'waiting', source: '6/14 线上会议' }
+];
+
+const WEEKLY_REPORT = {
+  period: '2026年6月16日 - 6月20日',
+  stats: { contacted: 5, newContacts: 2, commitDone: 3, commitPending: 5, events: 3 },
+  highlights: [
+    { icon: '🔴', text: '王总关系从"沟通中"推进到"方案评估"，但本地部署方案截止时间临近，需立即处理。' },
+    { icon: '🟢', text: '张瑶（YC 合伙人）主动发起交流，LinkBase 所在赛道获得顶级投资人关注。' },
+    { icon: '🔵', text: '前同事老李重新联系，在新公司负责 AI 中台，产生潜在合作机会。' },
+    { icon: '🟡', text: 'Alex 社媒动态触发了一次自然联系时机，适合发送产品进展更新。' }
+  ],
+  coldRelations: [
+    { name: 'Lily', contact: 'lily', days: 7, reason: '面试材料发出后无反馈' }
+  ],
+  contactSummary: [
+    { contact: 'wang', change: '+12', direction: 'up', note: '密集沟通期，关系升温' },
+    { contact: 'alex', change: '+5', direction: 'up', note: '社媒触发，有联系时机' },
+    { contact: 'lily', change: '-8', direction: 'down', note: '等待超时，关系冷却' },
+    { contact: 'chen', change: '+3', direction: 'up', note: '技术对接顺利推进' },
+    { contact: 'zhang', change: '新增', direction: 'new', note: '高价值初次接触' },
+    { contact: 'laoli', change: '激活', direction: 'new', note: '旧关系重新激活' }
+  ]
+};
+
+// ━━━━━━━━━━━━━━━━━━━━ Navigation ━━━━━━━━━━━━━━━━━━━━
+
+const PAGE_TITLES = {
+  'dashboard': '今日行动中心',
+  'inbox': '信息收件箱',
+  'contacts': '联系人管理',
+  'waiting': '谁在等我 / 我在等谁',
+  'commitments': '承诺清单',
+  'social': '关注账号动态',
+  'weekly': '周报',
+  'ai-demo': 'AI 分析演示',
+  'about': '关于产品'
+};
+
+function navigateTo(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const el = document.getElementById('page-' + page);
+  if (el) el.classList.add('active');
+  const nav = document.querySelector(`.nav-item[data-page="${page}"]`);
+  if (nav) nav.classList.add('active');
+  document.getElementById('topbarTitle').textContent = PAGE_TITLES[page] || '';
+  if (page === 'contacts') {
+    document.getElementById('contactListView').style.display = '';
+    document.getElementById('contactDetail').classList.remove('active');
+  }
+  if (window.innerWidth <= 768) toggleSidebar();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('mobileOverlay').classList.toggle('show');
+}
+
+// ━━━━━━━━━━━━━━━━━━━━ Render: Dashboard ━━━━━━━━━━━━━━━━━━━━
+
+function renderDashboard() {
+  const actions = [
+    ...WAITING_FOR_ME.map(w => ({ ...w, category: 'wait-me' })),
+    ...WAITING_FOR_THEM.filter(w => w.urgency !== 'low').map(w => ({ ...w, category: 'wait-them' }))
+  ];
+  const container = document.getElementById('dashboardActions');
+  container.innerHTML = actions.map(a => {
+    const c = CONTACTS.find(c => c.id === a.contact);
+    const urgencyTag = a.urgency === 'high' ? '<span class="tag tag-red">高优先级</span>'
+      : a.urgency === 'mid' ? '<span class="tag tag-yellow">需关注</span>'
+      : '<span class="tag tag-green">正常</span>';
+    const categoryTag = a.category === 'wait-me' ? '<span class="tag tag-red">谁在等我</span>' : '<span class="tag tag-yellow">我在等谁</span>';
+    return `<div class="action-card" onclick="showContactProfile('${a.contact}')">
+      <div class="avatar ${c ? c.avatarClass : 'avatar-blue'}">${c ? c.avatar : '?'}</div>
+      <div class="action-body">
+        <div class="action-top">
+          <span class="action-name">${a.person}</span>
+          <div style="display:flex;gap:6px">${categoryTag}${urgencyTag}</div>
+        </div>
+        <div class="action-subtitle">${a.company}</div>
+        <div class="action-desc">${a.desc}</div>
+        <div class="action-meta">
+          <span>⏰ ${a.days}</span>
+          <span>💡 ${a.action}</span>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+          ${a.draft ? `<button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();openDraft('${a.person}','${a.contact}')">📝 消息草稿</button>` : ''}
+          <button class="btn btn-sm btn-ghost" onclick="event.stopPropagation();openBriefing('${a.contact}')">📋 会前简报</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ━━━━━━━━━━━━━━━━━━━━ Render: Inbox ━━━━━━━━━━━━━━━━━━━━
+
+function renderInbox(filter) {
+  const sources = ['全部', '邮件', '日历', '会议纪要', '聊天', '社媒', '文件'];
+  const filterBar = document.getElementById('inboxFilters');
+  filterBar.innerHTML = sources.map(s =>
+    `<div class="filter-tab${(!filter && s==='全部') || filter===s ? ' active' : ''}" onclick="renderInbox('${s==='全部'?'':s}')">${s}</div>`
+  ).join('');
+
+  const items = filter ? INBOX_ITEMS.filter(i => i.source === filter) : INBOX_ITEMS;
+  const list = document.getElementById('inboxList');
+  list.innerHTML = items.map(i => `
+    <div class="inbox-item" ${i.contact ? `onclick="showContactProfile('${i.contact}')" style="cursor:pointer"` : ''}>
+      <div class="inbox-status ${i.unread ? 'inbox-unread' : 'inbox-read'}"></div>
+      <div class="inbox-icon" style="background:${i.iconBg}">${i.icon}</div>
+      <div class="inbox-body">
+        <div class="inbox-title">${i.title}</div>
+        <div class="inbox-preview">${i.preview}</div>
+        <div class="inbox-tags">${i.tags.map(t => `<span class="mini-tag">${t}</span>`).join('')}</div>
+      </div>
+      <div class="inbox-time">${i.time}</div>
+    </div>
+  `).join('');
+}
+
+// ━━━━━━━━━━━━━━━━━━━━ Render: Contacts ━━━━━━━━━━━━━━━━━━━━
+
+function renderContacts(filter) {
+  const types = ['全部', '客户', '投资人', 'HR', '合作方', '人脉'];
+  const filterBar = document.getElementById('contactFilters');
+  filterBar.innerHTML = types.map(t =>
+    `<div class="filter-tab${(!filter && t==='全部') || filter===t ? ' active' : ''}" onclick="renderContacts('${t==='全部'?'':t}')">${t}</div>`
+  ).join('');
+
+  const contacts = filter ? CONTACTS.filter(c => c.type === filter) : CONTACTS;
+  const grid = document.getElementById('contactGrid');
+  grid.innerHTML = contacts.map(c => {
+    const stageClass = c.stage.includes('评估') || c.stage.includes('对接') ? 'tag-yellow'
+      : c.stage.includes('等待') ? 'tag-red'
+      : c.stage.includes('初次') || c.stage.includes('重新') ? 'tag-purple'
+      : 'tag-green';
+    return `<div class="card" style="padding:20px;cursor:pointer" onclick="showContactProfile('${c.id}')">
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+        <div class="avatar ${c.avatarClass}">${c.avatar}</div>
+        <div>
+          <div style="font-weight:700;font-size:15px">${c.name}</div>
+          <div style="font-size:13px;color:var(--text-secondary)">${c.company} · ${c.title}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+        <span class="tag tag-blue">${c.type}</span>
+        <span class="tag ${stageClass}">${c.stage}</span>
+      </div>
+      <div class="health-bar-wrap" style="margin-top:0;margin-bottom:10px">
+        <div class="health-bar"><div class="health-bar-fill" style="width:${c.health}%;background:${getHealthColor(c.health)}"></div></div>
+        <span style="font-size:13px;font-weight:700;color:${getHealthColor(c.health)}">${c.health}</span>
+      </div>
+      <div style="font-size:13px;color:var(--text-secondary);display:flex;justify-content:space-between">
+        <span>最近联系：${c.lastContact}</span>
+        <span>频率：${c.frequency}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function showContactProfile(id) {
+  const c = CONTACTS.find(x => x.id === id);
+  if (!c) return;
+  navigateTo('contacts');
+  document.getElementById('contactListView').style.display = 'none';
+  const detail = document.getElementById('contactDetail');
+  const stageClass = c.stage.includes('评估') || c.stage.includes('对接') ? 'tag-yellow'
+    : c.stage.includes('等待') ? 'tag-red'
+    : c.stage.includes('初次') || c.stage.includes('重新') ? 'tag-purple'
+    : 'tag-green';
+
+  detail.innerHTML = `
+    <div class="back-btn" onclick="navigateTo('contacts')">← 返回联系人列表</div>
+    <div class="card">
+      <div class="profile-header">
+        <div class="avatar profile-avatar ${c.avatarClass}">${c.avatar}</div>
+        <div class="profile-info">
+          <h2>${c.name}</h2>
+          <div class="subtitle">${c.company} · ${c.title}</div>
+          <div class="profile-tags">
+            <span class="tag tag-blue">${c.type}</span>
+            <span class="tag ${stageClass}">${c.stage}</span>
+          </div>
+        </div>
+        ${findDraftForContact(id) ? `<button class="btn btn-primary btn-sm" onclick="openDraft('${c.name}','${c.id}')">📝 消息草稿</button>` : ''}
+      </div>
+      <div class="profile-stats">
+        <div class="profile-stat"><div class="val">${c.timeline.length}</div><div class="lbl">互动次数</div></div>
+        <div class="profile-stat"><div class="val">${c.interests.length}</div><div class="lbl">关注点</div></div>
+        <div class="profile-stat"><div class="val">${c.lastContact}</div><div class="lbl">最近联系</div></div>
+        <div class="profile-stat"><div class="val">${c.frequency}</div><div class="lbl">建议频率</div></div>
+      </div>
+      <div style="padding:16px 24px;border-bottom:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <span style="font-weight:700;font-size:14px">关系健康度</span>
+          <span style="font-size:12px;color:var(--text-secondary)">${getHealthLabel(c.health)}</span>
+        </div>
+        <div class="health-bar-wrap">
+          <div class="health-bar"><div class="health-bar-fill" style="width:${c.health}%;background:${getHealthColor(c.health)}"></div></div>
+          <span class="health-score" style="color:${getHealthColor(c.health)}">${c.health}</span>
+        </div>
+      </div>
+      <div class="timeline">
+        <h3>互动时间线</h3>
+        ${c.timeline.map(t => `
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div class="tl-date">${t.date}</div>
+            <h4>${t.title}</h4>
+            <p>${t.desc}</p>
+          </div>
+        `).join('')}
+      </div>
+      <div class="analysis-block">
+        <h3>🤖 AI 持久化分析</h3>
+        <div class="analysis-row"><strong>关系阶段</strong><span>${c.analysis.stage}</span></div>
+        <div class="analysis-row"><strong>关注点排序</strong><span>${c.analysis.interest}</span></div>
+        <div class="analysis-row"><strong>建议节奏</strong><span>${c.analysis.rhythm}</span></div>
+        <div class="analysis-row"><strong>当前机会</strong><span>${c.analysis.opportunity}</span></div>
+        <div class="analysis-row"><strong>风险提醒</strong><span>${c.analysis.risk}</span></div>
+      </div>
+      <div class="analysis-block">
+        <h3>🏷️ 关注点标签</h3>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          ${c.interests.map(i => `<span class="tag tag-blue">${i}</span>`).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+  detail.classList.add('active');
+}
+
+// ━━━━━━━━━━━━━━━━━━━━ Render: Waiting ━━━━━━━━━━━━━━━━━━━━
+
+function renderWaiting() {
+  document.getElementById('waitMeCount').textContent = WAITING_FOR_ME.length;
+  document.getElementById('waitThemCount').textContent = WAITING_FOR_THEM.length;
+
+  document.getElementById('waitingForMe').innerHTML = WAITING_FOR_ME.map(w => `
+    <div class="wait-item" onclick="showContactProfile('${w.contact}')">
+      <div class="wait-top">
+        <span class="wait-person">${w.person} · ${w.company}</span>
+        <span class="wait-days" style="color:${w.urgency==='high'?'var(--red)':w.urgency==='mid'?'var(--yellow)':'var(--green)'}">${w.days}</span>
+      </div>
+      <div class="wait-desc">${w.desc}</div>
+      <div class="wait-action">💡 ${w.action}</div>
+      ${w.draft ? `<button class="btn btn-sm btn-secondary" style="margin-top:6px" onclick="event.stopPropagation();openDraft('${w.person}','${w.contact}')">📝 查看消息草稿</button>` : ''}
+    </div>
+  `).join('');
+
+  document.getElementById('waitingForThem').innerHTML = WAITING_FOR_THEM.map(w => `
+    <div class="wait-item" onclick="showContactProfile('${w.contact}')">
+      <div class="wait-top">
+        <span class="wait-person">${w.person} · ${w.company}</span>
+        <span class="wait-days" style="color:${w.urgency==='high'?'var(--red)':w.urgency==='mid'?'var(--yellow)':'var(--green)'}">${w.days}</span>
+      </div>
+      <div class="wait-desc">${w.desc}</div>
+      <div class="wait-action">💡 ${w.action}</div>
+      ${w.draft ? `<button class="btn btn-sm btn-secondary" style="margin-top:6px" onclick="event.stopPropagation();openDraft('${w.person}','${w.contact}')">📝 查看消息草稿</button>` : ''}
+    </div>
+  `).join('');
+}
+
+// ━━━━━━━━━━━━━━━━━━━━ Render: Social Feed ━━━━━━━━━━━━━━━━━━━━
+
+function renderSocialFeed() {
+  const container = document.getElementById('socialFeed');
+  container.innerHTML = SOCIAL_FEEDS.map(f => `
+    <div class="card feed-card">
+      <div class="feed-header">
+        <div class="avatar ${f.avatarClass}">${f.avatar}</div>
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:15px">${f.person}</div>
+          <div style="font-size:13px;color:var(--text-secondary)">${f.company}</div>
+        </div>
+        <span class="feed-platform ${f.platformClass}">${f.platform}</span>
+        <span style="font-size:12px;color:var(--text-secondary)">${f.time}</span>
+      </div>
+      <div class="feed-content">${f.content.replace(/\n/g, '<br>')}</div>
+      <div class="feed-ai-box">
+        <div class="ai-label">🤖 AI 分析 · ${f.aiEvent}</div>
+        <p style="margin-bottom:8px">${f.aiAnalysis}</p>
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <span class="tag tag-blue">💡 ${f.aiAction}</span>
+          <button class="btn btn-sm btn-primary" onclick="showContactProfile('${f.contact}')">查看关系档案</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ━━━━━━━━━━━━━━━━━━━━ AI Analysis Demo ━━━━━━━━━━━━━━━━━━━━
+
+function runAIAnalysis() {
+  const output = document.getElementById('aiOutput');
+  const loading = document.getElementById('aiLoading');
+  output.innerHTML = '';
+  loading.classList.add('show');
+
+  setTimeout(() => {
+    loading.classList.remove('show');
+    output.innerHTML = AI_ANALYSIS_RESULTS.map(r => `
+      <div class="ai-output-item">
+        <div class="ai-tag"><span class="tag ${r.tagClass}">${r.tag}</span></div>
+        <p>${r.text}</p>
+      </div>
+    `).join('');
+    const items = output.querySelectorAll('.ai-output-item');
+    items.forEach((item, i) => {
+      setTimeout(() => item.classList.add('visible'), i * 300);
+    });
+  }, 1500);
+}
+
+// ━━━━━━━━━━━━━━━━━━━━ Draft Modal ━━━━━━━━━━━━━━━━━━━━
+
+function findDraftForContact(contactId) {
+  const all = [...WAITING_FOR_ME, ...WAITING_FOR_THEM];
+  return all.find(w => w.contact === contactId && w.draft);
+}
+
+function openDraft(personName, contactId) {
+  const item = findDraftForContact(contactId);
+  if (!item) return;
+  const c = CONTACTS.find(x => x.id === contactId);
+  document.getElementById('draftModalTitle').textContent = `给 ${personName} 的消息草稿`;
+  document.getElementById('draftContext').innerHTML = `<strong>背景：</strong>${item.desc}<br><strong>建议动作：</strong>${item.action}${c ? `<br><strong>关系阶段：</strong>${c.stage}` : ''}`;
+  document.getElementById('draftText').value = item.draft;
+  document.getElementById('draftModal').classList.add('show');
+}
+
+function closeDraftModal() {
+  document.getElementById('draftModal').classList.remove('show');
+}
+
+function copyDraft() {
+  const text = document.getElementById('draftText').value;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.modal-footer .btn-primary');
+    const orig = btn.textContent;
+    btn.textContent = '✓ 已复制';
+    setTimeout(() => btn.textContent = orig, 1500);
+  }).catch(() => {
+    alert('复制成功（模拟）');
+  });
+}
+
+// ━━━━━━━━━━━━━━━━━━━━ Health Score Helpers ━━━━━━━━━━━━━━━━━━━━
+
+function getHealthColor(score) {
+  if (score >= 75) return 'var(--green)';
+  if (score >= 50) return 'var(--yellow)';
+  return 'var(--red)';
+}
+
+function getHealthLabel(score) {
+  if (score >= 85) return '关系活跃';
+  if (score >= 70) return '关系良好';
+  if (score >= 50) return '需要关注';
+  return '关系冷却';
+}
+
+// ━━━━━━━━━━━━━━━━━━━━ Render: Commitments ━━━━━━━━━━━━━━━━━━━━
+
+function renderCommitments(filter) {
+  const filters = ['全部', '我答应的', '对方答应的', '已逾期'];
+  const filterBar = document.getElementById('commitFilters');
+  filterBar.innerHTML = filters.map(f =>
+    `<div class="filter-tab${(!filter && f==='全部') || filter===f ? ' active' : ''}" onclick="renderCommitments('${f==='全部'?'':f}')">${f}</div>`
+  ).join('');
+
+  let items = COMMITMENTS;
+  if (filter === '我答应的') items = items.filter(c => c.dir === 'mine');
+  else if (filter === '对方答应的') items = items.filter(c => c.dir === 'theirs');
+  else if (filter === '已逾期') items = items.filter(c => c.status === 'overdue');
+
+  const table = document.getElementById('commitTable');
+  table.innerHTML = `
+    <thead><tr>
+      <th>方向</th><th>联系人</th><th>承诺事项</th><th>截止时间</th><th>状态</th><th>来源</th>
+    </tr></thead>
+    <tbody>${items.map(c => {
+      const dirLabel = c.dir === 'mine' ? '<span class="tag tag-blue">我答应的</span>' : '<span class="tag tag-purple">对方答应的</span>';
+      const statusLabel = c.status === 'overdue' ? '<span class="commit-status" style="color:var(--red)">⚠️ 已逾期</span>'
+        : c.status === 'done' ? '<span class="commit-status" style="color:var(--green)">✅ 已完成</span>'
+        : c.status === 'waiting' ? '<span class="commit-status" style="color:var(--text-secondary)">⏳ 等待触发</span>'
+        : '<span class="commit-status" style="color:var(--yellow)">🔶 待处理</span>';
+      return `<tr style="cursor:pointer" onclick="showContactProfile('${c.contact}')">
+        <td>${dirLabel}</td>
+        <td><strong>${c.person}</strong></td>
+        <td>${c.what}</td>
+        <td style="white-space:nowrap">${c.deadline}</td>
+        <td>${statusLabel}</td>
+        <td style="font-size:12px;color:var(--text-secondary)">${c.source}</td>
+      </tr>`;
+    }).join('')}</tbody>`;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━ Render: Weekly Report ━━━━━━━━━━━━━━━━━━━━
+
+function renderWeeklyReport() {
+  const r = WEEKLY_REPORT;
+  const container = document.getElementById('weeklyReport');
+  container.innerHTML = `
+    <div class="report-stat-grid">
+      <div class="report-stat"><div class="val">${r.stats.contacted}</div><div class="lbl">本周联系人</div></div>
+      <div class="report-stat"><div class="val">${r.stats.newContacts}</div><div class="lbl">新增联系人</div></div>
+      <div class="report-stat"><div class="val">${r.stats.commitDone}</div><div class="lbl">完成承诺</div></div>
+      <div class="report-stat"><div class="val">${r.stats.commitPending}</div><div class="lbl">待处理承诺</div></div>
+      <div class="report-stat"><div class="val">${r.stats.events}</div><div class="lbl">关系事件</div></div>
+    </div>
+
+    <div class="card report-card">
+      <h3 style="font-size:16px;font-weight:700;margin-bottom:14px">📌 本周关键事件</h3>
+      ${r.highlights.map(h => `
+        <div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px">
+          <span style="font-size:18px">${h.icon}</span>
+          <span>${h.text}</span>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="card report-card">
+      <h3 style="font-size:16px;font-weight:700;margin-bottom:14px">📊 联系人健康度变化</h3>
+      ${r.contactSummary.map(s => {
+        const c = CONTACTS.find(x => x.id === s.contact);
+        if (!c) return '';
+        const changeColor = s.direction === 'up' ? 'var(--green)' : s.direction === 'down' ? 'var(--red)' : 'var(--blue)';
+        return `<div class="report-contact-row" style="cursor:pointer" onclick="showContactProfile('${s.contact}')">
+          <div class="avatar ${c.avatarClass}" style="width:36px;height:36px;font-size:14px">${c.avatar}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;font-size:14px">${c.name} <span style="font-weight:400;color:var(--text-secondary);font-size:13px">${c.company}</span></div>
+            <div style="font-size:13px;color:var(--text-secondary)">${s.note}</div>
+          </div>
+          <div class="health-bar-wrap" style="width:120px;margin:0">
+            <div class="health-bar"><div class="health-bar-fill" style="width:${c.health}%;background:${getHealthColor(c.health)}"></div></div>
+            <span style="font-size:13px;font-weight:700;color:${getHealthColor(c.health)}">${c.health}</span>
+          </div>
+          <span style="font-weight:700;color:${changeColor};font-size:13px;min-width:40px;text-align:right">${s.direction==='up'?'↑':''}${s.direction==='down'?'↓':''}${s.change}</span>
+        </div>`;
+      }).join('')}
+    </div>
+
+    ${r.coldRelations.length > 0 ? `
+    <div class="card report-card" style="border-left:3px solid var(--red)">
+      <h3 style="font-size:16px;font-weight:700;margin-bottom:14px;color:var(--red)">⚠️ 冷却关系提醒</h3>
+      ${r.coldRelations.map(cr => {
+        const c = CONTACTS.find(x => x.id === cr.contact);
+        return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;cursor:pointer" onclick="showContactProfile('${cr.contact}')">
+          <div class="avatar ${c?c.avatarClass:'avatar-blue'}" style="width:36px;height:36px;font-size:14px">${c?c.avatar:'?'}</div>
+          <div style="flex:1">
+            <div style="font-weight:700">${cr.name}</div>
+            <div style="font-size:13px;color:var(--text-secondary)">${cr.reason} · 已 ${cr.days} 天未互动</div>
+          </div>
+          <span class="tag tag-red">需关注</span>
+        </div>`;
+      }).join('')}
+    </div>` : ''}
+
+    <div class="card report-card">
+      <h3 style="font-size:16px;font-weight:700;margin-bottom:10px">🤖 AI 周度建议</h3>
+      <div style="font-size:14px;line-height:1.8;color:#475467">
+        <p style="margin-bottom:10px">1. <strong>王总方案是本周最高优先级</strong>：客户处于采购决策前期，方案延迟可能导致转向竞品。建议今天完成并发送。</p>
+        <p style="margin-bottom:10px">2. <strong>张瑶是本周最大新机会</strong>：YC 合伙人主动发起交流，说明赛道获得关注。建议今天回复并约本周交流。</p>
+        <p style="margin-bottom:10px">3. <strong>Lily 关系需要激活</strong>：7 天未回复已超出正常周期，建议发送一次礼貌询问避免关系冷却。</p>
+        <p>4. <strong>下周重点</strong>：完成陈工联调、跟进王总技术演示安排、与张瑶完成首次深度交流、给 Alex 发送更新。</p>
+      </div>
+    </div>
+  `;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━ Quick Add ━━━━━━━━━━━━━━━━━━━━
+
+function openQuickAdd() {
+  const select = document.getElementById('qaContact');
+  select.innerHTML = CONTACTS.map(c => `<option value="${c.id}">${c.name} (${c.company})</option>`).join('');
+  document.getElementById('qaDate').valueAsDate = new Date();
+  document.getElementById('qaSummary').value = '';
+  document.getElementById('qaCommitment').value = '';
+  document.getElementById('quickAddModal').classList.add('show');
+}
+
+function closeQuickAdd() {
+  document.getElementById('quickAddModal').classList.remove('show');
+}
+
+function switchQuickTab(tab, el) {
+  document.getElementById('quickTabRecord').style.display = tab === 'record' ? '' : 'none';
+  document.getElementById('quickTabContact').style.display = tab === 'contact' ? '' : 'none';
+  document.getElementById('quickAddTitle').textContent = tab === 'record' ? '快速记录沟通' : '添加联系人';
+  el.parentElement.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function submitQuickAdd() {
+  const isRecord = document.getElementById('quickTabRecord').style.display !== 'none';
+  if (isRecord) {
+    const contactId = document.getElementById('qaContact').value;
+    const summary = document.getElementById('qaSummary').value;
+    const channel = document.getElementById('qaChannel').value;
+    const commitment = document.getElementById('qaCommitment').value;
+    if (!summary.trim()) { alert('请填写沟通内容摘要'); return; }
+    const c = CONTACTS.find(x => x.id === contactId);
+    if (c) {
+      c.timeline.push({
+        date: new Date().toLocaleDateString('zh-CN', {month:'numeric',day:'numeric'}).replace('/','\u6708') + '\u65e5',
+        title: channel + '沟通',
+        desc: summary
+      });
+      c.lastContact = '刚刚';
+      c.health = Math.min(100, c.health + 5);
+    }
+    if (commitment && c) {
+      COMMITMENTS.push({
+        id: COMMITMENTS.length + 1,
+        dir: 'mine',
+        person: c.name,
+        contact: c.id,
+        what: commitment,
+        deadline: '待定',
+        status: 'pending',
+        source: '手动记录'
+      });
+    }
+    INBOX_ITEMS.unshift({
+      id: INBOX_ITEMS.length + 1,
+      source: channel === '邮件' ? '邮件' : channel === '电话' || channel === '面对面' ? '聊天' : '聊天',
+      icon: channel === '邮件' ? '📧' : channel === '电话' ? '📞' : channel === '会议' ? '📅' : '💬',
+      iconBg: '#e8f4fd',
+      title: `${c ? c.name : ''}：${channel}沟通记录`,
+      preview: summary,
+      time: '刚刚',
+      unread: false,
+      tags: [c ? c.name : '', channel, '手动记录'],
+      contact: contactId
+    });
+    renderDashboard();
+    renderInbox();
+    renderContacts();
+    renderCommitments();
+    showToast('沟通记录已保存');
+  } else {
+    const name = document.getElementById('qaName').value;
+    const company = document.getElementById('qaCompany').value;
+    const title = document.getElementById('qaTitle').value;
+    const type = document.getElementById('qaType').value;
+    const notes = document.getElementById('qaNotes').value;
+    if (!name.trim()) { alert('请填写联系人姓名'); return; }
+    const newId = 'c_' + Date.now();
+    const colors = ['avatar-blue','avatar-green','avatar-yellow','avatar-red','avatar-purple'];
+    CONTACTS.push({
+      id: newId,
+      name: name,
+      company: company || '未知',
+      title: title || '未知',
+      type: type,
+      avatar: name[0],
+      avatarClass: colors[CONTACTS.length % colors.length],
+      stage: '初次接触',
+      lastContact: '刚刚',
+      frequency: '待定',
+      health: 50,
+      interests: [],
+      timeline: [{ date: new Date().toLocaleDateString('zh-CN', {month:'numeric',day:'numeric'}).replace('/','\u6708') + '\u65e5', title: '添加联系人', desc: notes || '通过手动录入添加。' }],
+      analysis: {
+        stage: '初次接触（刚刚添加）',
+        interest: '待积累',
+        rhythm: '建议尽快安排首次深入交流',
+        opportunity: '待发现',
+        risk: '信息不足，需要更多互动来完善画像'
+      }
+    });
+    renderContacts();
+    showToast(`联系人 ${name} 已添加`);
+  }
+  closeQuickAdd();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = '✓ ' + msg;
+  t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 2500);
+}
+
+// ━━━━━━━━━━━━━━━━━━━━ Briefing Modal ━━━━━━━━━━━━━━━━━━━━
+
+function openBriefing(contactId) {
+  const c = CONTACTS.find(x => x.id === contactId);
+  if (!c) return;
+  document.getElementById('briefingTitle').textContent = `📋 会前简报 · ${c.name}`;
+  const commitItems = COMMITMENTS.filter(cm => cm.contact === contactId);
+  document.getElementById('briefingBody').innerHTML = `
+    <div class="briefing-section">
+      <h4>👤 参会人信息</h4>
+      <div style="display:flex;gap:12px;align-items:center;padding:10px;background:var(--bg);border-radius:var(--radius-sm)">
+        <div class="avatar ${c.avatarClass}">${c.avatar}</div>
+        <div>
+          <div style="font-weight:700">${c.name}</div>
+          <div style="font-size:13px;color:var(--text-secondary)">${c.company} · ${c.title} · ${c.type}</div>
+        </div>
+        <span class="tag tag-blue" style="margin-left:auto">${c.stage}</span>
+      </div>
+    </div>
+    <div class="briefing-section">
+      <h4>📝 上次沟通重点</h4>
+      <ul class="briefing-list">
+        ${c.timeline.slice(-2).map(t => `<li><span style="color:var(--blue);font-weight:700;white-space:nowrap">${t.date}</span> ${t.desc}</li>`).join('')}
+      </ul>
+    </div>
+    <div class="briefing-section">
+      <h4>🎯 对方关注点</h4>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${c.interests.map(i => `<span class="tag tag-blue">${i}</span>`).join('')}
+      </div>
+    </div>
+    ${commitItems.length > 0 ? `
+    <div class="briefing-section">
+      <h4>📋 相关承诺事项</h4>
+      <ul class="briefing-list">
+        ${commitItems.map(cm => {
+          const statusIcon = cm.status === 'overdue' ? '⚠️' : cm.status === 'done' ? '✅' : '🔶';
+          return `<li><span>${statusIcon}</span> <span>${cm.dir === 'mine' ? '我方' : '对方'}：${cm.what}</span></li>`;
+        }).join('')}
+      </ul>
+    </div>` : ''}
+    <div class="briefing-section">
+      <h4>💡 本次建议沟通要点</h4>
+      <ul class="briefing-list">
+        ${generateBriefingSuggestions(c).map(s => `<li><span style="color:var(--blue)">→</span> ${s}</li>`).join('')}
+      </ul>
+    </div>
+    <div class="briefing-section">
+      <h4>📊 关系健康度</h4>
+      <div class="health-bar-wrap">
+        <div class="health-bar"><div class="health-bar-fill" style="width:${c.health}%;background:${getHealthColor(c.health)}"></div></div>
+        <span class="health-score" style="color:${getHealthColor(c.health)}">${c.health}</span>
+        <span style="font-size:12px;color:var(--text-secondary)">${getHealthLabel(c.health)}</span>
+      </div>
+    </div>
+  `;
+  document.getElementById('briefingModal').classList.add('show');
+}
+
+function closeBriefing() {
+  document.getElementById('briefingModal').classList.remove('show');
+}
+
+function generateBriefingSuggestions(contact) {
+  const suggestions = {
+    'wang': ['确认本地部署方案细节（数据安全、权限隔离）', '了解技术演示时间和参会人安排', '询问采购流程和决策链'],
+    'alex': ['分享最新产品 Demo 和试点反馈数据', '提供 ROI 量化数据（跟进效率提升 40%）', '了解当前关注的投资主题'],
+    'lily': ['礼貌询问面试补充材料反馈进度', '确认后续面试安排', '了解岗位最新状态'],
+    'chen': ['确认接口文档修订点是否全部解决', '对齐测试环境搭建时间', '确认 Q3 整体排期和里程碑'],
+    'zhang': ['介绍 LinkBase 产品定位和差异化', '分享 AI CRM 行业理解', '约定后续深度交流时间'],
+    'laoli': ['了解新公司 AI 中台技术选型需求', '探讨产品层面的合作可能', '分享各自最新进展']
+  };
+  return suggestions[contact.id] || ['了解对方最新需求和关注点', '回顾上次沟通的未决事项', '确认后续合作方向'];
+}
+
+// ━━━━━━━━━━━━━━━━━━━━ Dark mode ━━━━━━━━━━━━━━━━━━━━
+
+function toggleDark() {
+  document.body.classList.toggle('dark');
+  const isDark = document.body.classList.contains('dark');
+  document.getElementById('darkBtn').textContent = isDark ? '☀️' : '🌙';
+  try { localStorage.setItem('lb-dark', isDark ? '1' : '0'); } catch(e) {}
+}
+
+// ━━━━━━━━━━━━━━━━━━━━ Time display ━━━━━━━━━━━━━━━━━━━━
+
+function updateTime() {
+  const now = new Date();
+  const opts = { month: 'long', day: 'numeric', weekday: 'long', hour: '2-digit', minute: '2-digit' };
+  document.getElementById('topbarTime').textContent = now.toLocaleDateString('zh-CN', opts);
+}
+
+// ━━━━━━━━━━━━━━━━━━━━ Init ━━━━━━━━━━━━━━━━━━━━
+
+function init() {
+  try {
+    if (localStorage.getItem('lb-dark') === '1') {
+      document.body.classList.add('dark');
+      document.getElementById('darkBtn').textContent = '☀️';
+    }
+  } catch(e) {}
+  updateTime();
+  setInterval(updateTime, 60000);
+  renderDashboard();
+  renderInbox();
+  renderContacts();
+  renderWaiting();
+  renderCommitments();
+  renderSocialFeed();
+  renderWeeklyReport();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
