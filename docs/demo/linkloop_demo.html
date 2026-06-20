@@ -18,6 +18,8 @@
   --card: #ffffff;
   --text: #191919;
   --text-secondary: #666666;
+  --text-tertiary: #999999;
+  --hover: rgba(0,0,0,0.04);
   --border: #e0dfdc;
   --green: #057642;
   --green-bg: #e2f7e7;
@@ -47,27 +49,27 @@ body {
 }
 a { color: var(--blue); text-decoration: none; }
 
-/* ── Sidebar ── */
-.sidebar {
-  width: 240px;
-  min-height: 100vh;
-  background: var(--sidebar-bg);
-  color: var(--sidebar-text);
-  display: flex;
-  flex-direction: column;
+/* ── Topbar ── */
+.topbar-main {
   position: fixed;
-  left: 0; top: 0; bottom: 0;
-  z-index: 100;
-  transition: transform var(--transition);
+  top: 0; left: 0; right: 0;
+  height: 56px;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 16px;
+  z-index: 200;
 }
-.sidebar-brand {
-  padding: 16px 18px;
+.topbar-brand {
   display: flex;
   align-items: center;
   gap: 10px;
-  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  flex-shrink: 0;
 }
-.sidebar-logo {
+.topbar-logo {
   width: 32px; height: 32px;
   border-radius: 6px;
   background: var(--blue);
@@ -76,10 +78,73 @@ a { color: var(--blue); text-decoration: none; }
   place-items: center;
   font-weight: 900;
   font-size: 12px;
+}
+.topbar-brand span { font-weight: 700; font-size: 15px; color: var(--text); }
+.topbar-search {
+  flex: 1;
+  max-width: 400px;
+  margin: 0 auto;
+  position: relative;
+}
+.topbar-search input {
+  width: 100%;
+  height: 36px;
+  padding: 0 14px 0 36px;
+  background: #eef3f8;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--text);
+  transition: all var(--transition);
+}
+.topbar-search input:focus { background: #fff; border-color: var(--blue); box-shadow: 0 0 0 2px rgba(10,102,194,.12); }
+.topbar-search::before { content: '🔍'; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 14px; opacity: .5; }
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   flex-shrink: 0;
 }
-.sidebar-brand span { font-weight: 700; font-size: 15px; color: var(--text); }
+.topbar-icon {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 16px;
+  transition: background var(--transition);
+}
+.topbar-icon:hover { background: var(--hover); }
+.topbar-user {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 12px;
+  box-shadow: 0 0 0 2px #fff;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 220px;
+  background: #fff;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0; top: 56px; bottom: 0;
+  z-index: 100;
+  overflow-y: auto;
+  transition: transform var(--transition);
+}
+.sidebar-brand { display: none; }
 .sidebar-nav { flex: 1; padding: 8px 6px; display: flex; flex-direction: column; gap: 1px; }
+.nav-group-label { padding: 12px 14px 4px; font-size: 11px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: .5px; }
+.nav-divider { margin: 6px 14px; border-top: 1px solid var(--border); }
 .nav-item {
   display: flex;
   align-items: center;
@@ -130,7 +195,7 @@ a { color: var(--blue); text-decoration: none; }
   z-index: 200;
   width: 40px; height: 40px;
   border-radius: var(--radius-sm);
-  background: var(--sidebar-bg);
+  background: var(--text);
   color: #fff;
   border: none;
   cursor: pointer;
@@ -147,15 +212,16 @@ a { color: var(--blue); text-decoration: none; }
 /* ── Main content ── */
 .main {
   flex: 1;
-  margin-left: 240px;
-  min-height: 100vh;
+  margin-left: 220px;
+  margin-top: 56px;
+  min-height: calc(100vh - 56px);
   display: flex;
   flex-direction: column;
 }
 .topbar {
   position: sticky;
-  top: 0;
-  z-index: 50;
+  top: 56px;
+  z-index: 40;
   background: rgba(255,255,255,.92);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
@@ -778,8 +844,10 @@ body.dark .mini-tag { background: rgba(10,102,194,.2); }
   .sidebar.open { transform: translateX(0); }
   .mobile-toggle { display: grid; }
   .mobile-overlay.show { display: block; }
-  .main { margin-left: 0; }
+  .main { margin-left: 0; margin-top: 56px; }
   .topbar { padding: 14px 16px; padding-left: 56px; }
+  .topbar-main { padding: 0 12px; }
+  .topbar-search { display: none; }
   .content { padding: 16px; }
   .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
 }
@@ -787,16 +855,28 @@ body.dark .mini-tag { background: rgba(10,102,194,.2); }
 </head>
 <body>
 
+<!-- Topbar -->
+<header class="topbar-main">
+  <div class="topbar-brand" onclick="navigateTo('dashboard')">
+    <div class="topbar-logo">LL</div>
+    <span>LinkLoop</span>
+  </div>
+  <div class="topbar-search">
+    <input type="text" placeholder="搜索联系人、信息..."/>
+  </div>
+  <div class="topbar-actions">
+    <div class="topbar-icon" onclick="navigateTo('ai-demo')" title="AI 分析">🤖</div>
+    <div class="topbar-icon" onclick="navigateTo('about')" title="设置">⚙️</div>
+    <div class="topbar-user">我</div>
+  </div>
+</header>
+
 <!-- Mobile toggle -->
 <button class="mobile-toggle" onclick="toggleSidebar()">☰</button>
 <div class="mobile-overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
 
 <!-- Sidebar -->
 <aside class="sidebar" id="sidebar">
-  <div class="sidebar-brand">
-    <div class="sidebar-logo">LL</div>
-    <span>领路 LinkLoop</span>
-  </div>
   <nav class="sidebar-nav">
     <div class="nav-item active" data-page="dashboard" onclick="navigateTo('dashboard')">
       <div class="nav-icon">📊</div>
@@ -805,16 +885,18 @@ body.dark .mini-tag { background: rgba(10,102,194,.2); }
     </div>
     <div class="nav-item" data-page="inbox" onclick="navigateTo('inbox')">
       <div class="nav-icon">📥</div>
-      <span>信息收件箱</span>
+      <span>收件箱</span>
       <span class="nav-badge">32</span>
     </div>
     <div class="nav-item" data-page="contacts" onclick="navigateTo('contacts')">
       <div class="nav-icon">👤</div>
-      <span>联系人管理</span>
+      <span>联系人</span>
     </div>
+    <div class="nav-divider"></div>
+    <div class="nav-group-label">跟进管理</div>
     <div class="nav-item" data-page="waiting" onclick="navigateTo('waiting')">
       <div class="nav-icon">⏳</div>
-      <span>谁在等我 / 我在等谁</span>
+      <span>谁在等我</span>
     </div>
     <div class="nav-item" data-page="commitments" onclick="navigateTo('commitments')">
       <div class="nav-icon">📋</div>
@@ -823,24 +905,26 @@ body.dark .mini-tag { background: rgba(10,102,194,.2); }
     </div>
     <div class="nav-item" data-page="social" onclick="navigateTo('social')">
       <div class="nav-icon">🌐</div>
-      <span>关注账号动态</span>
+      <span>社媒动态</span>
       <span class="nav-badge">3</span>
     </div>
     <div class="nav-item" data-page="weekly" onclick="navigateTo('weekly')">
       <div class="nav-icon">📈</div>
       <span>周报</span>
     </div>
+    <div class="nav-divider"></div>
+    <div class="nav-group-label">工具</div>
     <div class="nav-item" data-page="ai-demo" onclick="navigateTo('ai-demo')">
       <div class="nav-icon">🤖</div>
-      <span>AI 分析演示</span>
+      <span>AI 分析</span>
     </div>
     <div class="nav-item" data-page="about" onclick="navigateTo('about')">
       <div class="nav-icon">ℹ️</div>
-      <span>关于产品</span>
+      <span>关于</span>
     </div>
   </nav>
   <div class="sidebar-footer">
-    © 2026 领路 LinkLoop<br>TRAE AI 创造力大赛
+    © 2026 领路 LinkLoop
   </div>
 </aside>
 
