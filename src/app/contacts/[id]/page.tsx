@@ -1,0 +1,135 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { HealthBar } from "@/components/HealthBar";
+import { Tag } from "@/components/Tag";
+
+export default function ContactDetailPage() {
+  const { id } = useParams<{ id: string }>();
+  const router = useRouter();
+  const [contact, setContact] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`/api/contacts/${id}`).then(r => r.json()).then(d => { setContact(d); setLoading(false); });
+  }, [id]);
+
+  if (loading) return <div className="animate-pulse text-gray-400 py-12 text-center">加载中...</div>;
+  if (!contact) return <div className="text-center py-12 text-gray-400">联系人不存在</div>;
+
+  const interests: string[] = (() => { try { return JSON.parse(contact.interests); } catch { return []; } })();
+  const analysis = contact.analyses?.[0] ? (() => { try { return JSON.parse(contact.analyses[0].result); } catch { return null; } })() : null;
+
+  return (
+    <div>
+      <button onClick={() => router.push("/contacts")} className="text-gray-500 hover:text-[var(--blue)] text-sm font-semibold mb-4 inline-flex items-center gap-1">
+        ← 返回联系人列表
+      </button>
+
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm">
+        {/* Header */}
+        <div className="flex gap-4 items-start p-6 border-b border-gray-200">
+          <div className="w-14 h-14 rounded-full bg-blue-100 text-[var(--blue)] flex items-center justify-center font-bold text-xl">
+            {contact.avatar || contact.name[0]}
+          </div>
+          <div className="flex-1">
+            <h2 className="text-xl font-extrabold">{contact.name}</h2>
+            <div className="text-sm text-gray-500">{contact.company} · {contact.title}</div>
+            <div className="flex gap-1.5 mt-2">
+              <Tag color="blue">{contact.type}</Tag>
+              <Tag color="green">{contact.stage}</Tag>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-4 gap-3 p-5 border-b border-gray-200">
+          <div className="text-center">
+            <div className="text-xl font-extrabold text-[var(--blue)]">{contact.interactions?.length || 0}</div>
+            <div className="text-xs text-gray-500">互动次数</div>
+          </div>
+          <div className="text-center">
+            <div className="text-xl font-extrabold text-[var(--blue)]">{interests.length}</div>
+            <div className="text-xs text-gray-500">关注点</div>
+          </div>
+          <div className="text-center">
+            <div className="text-xl font-extrabold text-[var(--blue)]">{contact.lastContactAt ? new Date(contact.lastContactAt).toLocaleDateString("zh-CN") : "无"}</div>
+            <div className="text-xs text-gray-500">最近联系</div>
+          </div>
+          <div className="text-center">
+            <div className="text-xl font-extrabold text-[var(--blue)]">{contact.frequency}</div>
+            <div className="text-xs text-gray-500">建议频率</div>
+          </div>
+        </div>
+
+        {/* Health */}
+        <div className="p-5 border-b border-gray-200">
+          <div className="flex justify-between items-center mb-2">
+            <span className="font-bold text-sm">关系健康度</span>
+          </div>
+          <HealthBar score={contact.health} />
+        </div>
+
+        {/* Timeline */}
+        <div className="p-6">
+          <h3 className="font-bold mb-4">互动时间线</h3>
+          <div className="border-l-2 border-gray-200 ml-1.5 pl-5 space-y-5">
+            {(contact.interactions || []).map((t: any) => (
+              <div key={t.id} className="relative">
+                <div className="absolute -left-[27px] top-1 w-3 h-3 rounded-full bg-[var(--blue)] border-2 border-white shadow-sm" />
+                <div className="text-xs text-gray-400 mb-0.5">{new Date(t.date).toLocaleDateString("zh-CN")} · {t.channel}</div>
+                <p className="text-sm text-gray-600">{t.summary}</p>
+              </div>
+            ))}
+            {(!contact.interactions || contact.interactions.length === 0) && (
+              <div className="text-sm text-gray-400">暂无互动记录</div>
+            )}
+          </div>
+        </div>
+
+        {/* AI Analysis */}
+        {analysis && (
+          <div className="p-6 border-t border-gray-200">
+            <h3 className="font-bold mb-4">🤖 AI 持久化分析</h3>
+            <div className="space-y-3">
+              {Object.entries(analysis).map(([key, val]) => (
+                <div key={key} className="flex gap-3 text-sm border-b border-dashed border-gray-100 pb-3 last:border-b-0">
+                  <strong className="text-gray-500 min-w-[80px] shrink-0">{key}</strong>
+                  <span className="text-gray-700">{String(val)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Interests */}
+        {interests.length > 0 && (
+          <div className="p-6 border-t border-gray-200">
+            <h3 className="font-bold mb-3">🏷️ 关注点标签</h3>
+            <div className="flex gap-1.5 flex-wrap">
+              {interests.map((i) => <Tag key={i} color="blue">{i}</Tag>)}
+            </div>
+          </div>
+        )}
+
+        {/* Commitments */}
+        {contact.commitments?.length > 0 && (
+          <div className="p-6 border-t border-gray-200">
+            <h3 className="font-bold mb-3">📋 相关承诺</h3>
+            <div className="space-y-2">
+              {contact.commitments.map((cm: any) => (
+                <div key={cm.id} className="flex items-center gap-2 text-sm p-2.5 bg-gray-50 rounded-lg">
+                  <span>{cm.status === "overdue" ? "⚠️" : cm.status === "done" ? "✅" : "🔶"}</span>
+                  <Tag color={cm.direction === "mine" ? "blue" : "purple"}>{cm.direction === "mine" ? "我方" : "对方"}</Tag>
+                  <span className="flex-1">{cm.what}</span>
+                  <span className="text-xs text-gray-400">{cm.deadline}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        String    @id @default(cuid())
+  name      String
+  email     String    @unique
+  createdAt DateTime  @default(now())
+  contacts  Contact[]
+}
+
+model Contact {
+  id            String        @id @default(cuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id])
+  name          String
+  company       String        @default("")
+  title         String        @default("")
+  type          String        @default("其他")
+  avatar        String        @default("")
+  stage         String        @default("初次接触")
+  health        Int           @default(50)
+  frequency     String        @default("待定")
+  interests     String        @default("[]")
+  notes         String        @default("")
+  lastContactAt DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  interactions  Interaction[]
+  commitments   Commitment[]
+  inboxItems    InboxItem[]
+  socialFeeds   SocialFeed[]
+  analyses      AIAnalysis[]
+}
+
+model Interaction {
+  id        String   @id @default(cuid())
+  contactId String
+  contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  channel   String
+  summary   String
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+}
+
+model Commitment {
+  id        String   @id @default(cuid())
+  contactId String
+  contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  direction String
+  what      String
+  deadline  String   @default("")
+  status    String   @default("pending")
+  source    String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model InboxItem {
+  id        String   @id @default(cuid())
+  contactId String?
+  contact   Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  source    String
+  title     String
+  preview   String
+  tags      String   @default("[]")
+  unread    Boolean  @default(true)
+  time      String   @default("")
+  createdAt DateTime @default(now())
+}
+
+model SocialFeed {
+  id         String   @id @default(cuid())
+  contactId  String?
+  contact    Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  platform   String
+  person     String
+  company    String   @default("")
+  content    String
+  aiEvent    String   @default("")
+  aiAnalysis String   @default("")
+  aiAction   String   @default("")
+  time       String   @default("")
+  createdAt  DateTime @default(now())
+}
+
+model AIAnalysis {
+  id        String   @id @default(cuid())
+  contactId String
+  contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  type      String
+  result    String
+  createdAt DateTime @default(now())
+}
+
+model DataSource {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String   // gmail / gcal / outlook / github
+  status      String   @default("disconnected")
+  credentials String   @default("")
+  lastSyncAt  DateTime?
+  syncConfig  String   @default("{}")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

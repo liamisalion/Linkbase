@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { width: 320px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; background: #f5f7fa; color: #1f2937; }
+    .header { background: #101828; color: white; padding: 14px 16px; display: flex; align-items: center; gap: 10px; }
+    .logo { width: 28px; height: 28px; background: #0a66c2; border-radius: 6px; display: grid; place-items: center; font-weight: 900; font-size: 11px; }
+    .header h1 { font-size: 15px; font-weight: 700; }
+    .content { padding: 14px; }
+    .section { margin-bottom: 14px; }
+    .section h2 { font-size: 13px; font-weight: 700; color: #667085; margin-bottom: 8px; }
+    .input-group { margin-bottom: 10px; }
+    .input-group label { display: block; font-size: 12px; color: #667085; margin-bottom: 3px; font-weight: 600; }
+    input, textarea, select { width: 100%; padding: 7px 10px; border: 1px solid #d9e2ec; border-radius: 6px; font-size: 13px; font-family: inherit; }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: #0a66c2; box-shadow: 0 0 0 2px rgba(10,102,194,.1); }
+    textarea { min-height: 60px; resize: vertical; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .btn { width: 100%; padding: 9px; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .15s; }
+    .btn-primary { background: #0a66c2; color: white; }
+    .btn-primary:hover { background: #084c91; }
+    .btn-secondary { background: white; color: #0a66c2; border: 1px solid #0a66c2; }
+    .btn-secondary:hover { background: #eef6ff; }
+    .btn:disabled { opacity: .5; cursor: default; }
+    .status { padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; margin-top: 10px; }
+    .status-success { background: #dcfae6; color: #057642; }
+    .status-error { background: #fee4e2; color: #b42318; }
+    .status-info { background: #e8f4fd; color: #0a66c2; }
+    .server-config { padding: 10px 14px; background: white; border: 1px solid #d9e2ec; border-radius: 8px; margin-bottom: 14px; }
+    .server-url { font-size: 12px; color: #667085; }
+    .tabs { display: flex; gap: 4px; margin-bottom: 12px; }
+    .tab { flex: 1; padding: 6px; text-align: center; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid #d9e2ec; background: white; color: #667085; }
+    .tab.active { background: #0a66c2; color: white; border-color: #0a66c2; }
+    .footer { padding: 10px 14px; text-align: center; font-size: 11px; color: #98a2b3; border-top: 1px solid #e4e7ec; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">LB</div>
+    <h1>LinkBase 常联系</h1>
+  </div>
+  <div class="content">
+    <div class="server-config">
+      <label style="font-size:12px;font-weight:600;color:#667085">LinkBase 服务器地址</label>
+      <input type="text" id="serverUrl" value="http://localhost:3000" style="margin-top:4px">
+      <button class="btn btn-secondary" style="margin-top:6px" onclick="testConnection()">测试连接</button>
+      <div id="connStatus"></div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" id="tabContact" onclick="switchTab('contact')">保存联系人</div>
+      <div class="tab" id="tabPost" onclick="switchTab('post')">保存动态</div>
+    </div>
+
+    <div id="contactForm">
+      <div class="section">
+        <div class="row">
+          <div class="input-group">
+            <label>姓名</label>
+            <input type="text" id="name" placeholder="联系人姓名">
+          </div>
+          <div class="input-group">
+            <label>公司</label>
+            <input type="text" id="company" placeholder="所在公司">
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-group">
+            <label>职位</label>
+            <input type="text" id="title" placeholder="职位">
+          </div>
+          <div class="input-group">
+            <label>类型</label>
+            <select id="type">
+              <option>客户</option><option>投资人</option><option>HR</option><option>合作方</option><option>人脉</option><option>同事</option><option>其他</option>
+            </select>
+          </div>
+        </div>
+        <div class="input-group">
+          <label>备注</label>
+          <textarea id="notes" placeholder="如何认识、关注点..."></textarea>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="saveContactBtn" onclick="saveContact()">保存到 LinkBase</button>
+      <div id="contactStatus"></div>
+    </div>
+
+    <div id="postForm" style="display:none">
+      <div class="section">
+        <div class="input-group">
+          <label>发布者</label>
+          <input type="text" id="postPerson" placeholder="发布者姓名">
+        </div>
+        <div class="row">
+          <div class="input-group">
+            <label>平台</label>
+            <select id="postPlatform">
+              <option>LinkedIn</option><option>X</option><option>脉脉</option><option>GitHub</option><option>其他</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>公司/身份</label>
+            <input type="text" id="postCompany" placeholder="">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>动态内容</label>
+          <textarea id="postContent" placeholder="粘贴或输入动态内容..." style="min-height:80px"></textarea>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="savePostBtn" onclick="savePost()">保存到 LinkBase</button>
+      <div id="postStatus"></div>
+    </div>
+  </div>
+  <div class="footer">LinkBase 常联系 · 浏览器插件 v0.1</div>
+  <script src="popup.js"></script>
+</body>
+</html>

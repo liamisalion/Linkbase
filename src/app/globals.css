@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+:root {
+  --blue: #0a66c2;
+  --blue-hover: #084c91;
+  --blue-light: #e8f4fd;
+  --blue-pale: #eef6ff;
+  --green: #057642;
+  --green-bg: #dcfae6;
+  --yellow: #b7791f;
+  --yellow-bg: #fef0c7;
+  --red: #b42318;
+  --red-bg: #fee4e2;
+  --purple: #6941c6;
+  --purple-bg: #f4f3ff;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.dark {
+  color-scheme: dark;
+}

@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "LinkBase 常联系",
+  "version": "0.1.0",
+  "description": "一键保存联系人和社媒动态到 LinkBase",
+  "permissions": ["activeTab", "storage"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.linkedin.com/*", "*://twitter.com/*", "*://x.com/*", "*://*.maimai.cn/*"],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ]
+}
