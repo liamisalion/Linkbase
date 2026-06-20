@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
   if (action === "connect") {
     let user = await prisma.user.findFirst();
     if (!user) {
-      user = await prisma.user.create({ data: { name: "Demo用户", email: "demo@linkbase.app" } });
+      user = await prisma.user.create({ data: { name: "Demo用户", email: "demo@linkloop.app" } });
     }
 
     const existing = await prisma.dataSource.findFirst({ where: { type: "gmail" } });

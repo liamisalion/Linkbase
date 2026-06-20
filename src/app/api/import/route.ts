@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
   let user = await prisma.user.findFirst();
   if (!user) {
     user = await prisma.user.create({
-      data: { name: "Demo用户", email: "demo@linkbase.app" },
+      data: { name: "Demo用户", email: "demo@linkloop.app" },
     });
   }
 

@@ -32,7 +32,7 @@ async function testConnection() {
       statusEl.innerHTML = '<div class="status status-error">✗ 服务器返回错误</div>';
     }
   } catch {
-    statusEl.innerHTML = '<div class="status status-error">✗ 无法连接到 LinkBase 服务器</div>';
+    statusEl.innerHTML = '<div class="status status-error">✗ 无法连接到 LinkLoop 服务器</div>';
   }
 }
 
@@ -63,7 +63,7 @@ async function saveContact() {
       body: JSON.stringify(data),
     });
     if (res.ok) {
-      statusEl.innerHTML = '<div class="status status-success">✓ 联系人已保存到 LinkBase</div>';
+      statusEl.innerHTML = '<div class="status status-success">✓ 联系人已保存到 LinkLoop</div>';
       document.getElementById('name').value = '';
       document.getElementById('company').value = '';
       document.getElementById('title').value = '';
@@ -72,7 +72,7 @@ async function saveContact() {
       statusEl.innerHTML = '<div class="status status-error">✗ 保存失败</div>';
     }
   } catch {
-    statusEl.innerHTML = '<div class="status status-error">✗ 无法连接到 LinkBase</div>';
+    statusEl.innerHTML = '<div class="status status-error">✗ 无法连接到 LinkLoop</div>';
   }
   btn.disabled = false;
 }
@@ -101,7 +101,7 @@ async function savePost() {
       body: JSON.stringify(data),
     });
     if (res.ok) {
-      statusEl.innerHTML = '<div class="status status-success">✓ 动态已保存到 LinkBase</div>';
+      statusEl.innerHTML = '<div class="status status-success">✓ 动态已保存到 LinkLoop</div>';
       document.getElementById('postContent').value = '';
       document.getElementById('postPerson').value = '';
       document.getElementById('postCompany').value = '';
@@ -109,7 +109,7 @@ async function savePost() {
       statusEl.innerHTML = '<div class="status status-error">✗ 保存失败</div>';
     }
   } catch {
-    statusEl.innerHTML = '<div class="status status-error">✗ 无法连接到 LinkBase</div>';
+    statusEl.innerHTML = '<div class="status status-error">✗ 无法连接到 LinkLoop</div>';
   }
   btn.disabled = false;
 }

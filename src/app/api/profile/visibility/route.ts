@@ -4,7 +4,7 @@ import prisma from "@/lib/db";
 async function getDefaultUser() {
   let user = await prisma.user.findFirst();
   if (!user) {
-    user = await prisma.user.create({ data: { name: "Demo用户", email: "demo@linkbase.app" } });
+    user = await prisma.user.create({ data: { name: "Demo用户", email: "demo@linkloop.app" } });
   }
   return user;
 }

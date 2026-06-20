@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>LinkBase 常联系 · AI 个人关系管理助手</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230a66c2'/><text x='50' y='72' font-size='52' font-weight='900' fill='white' text-anchor='middle' font-family='system-ui'>LB</text></svg>"/>
+<title>领路 LinkLoop · 为关键关系找到前进路径</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230a66c2'/><text x='50' y='72' font-size='52' font-weight='900' fill='white' text-anchor='middle' font-family='system-ui'>LL</text></svg>"/>
 <style>
 :root {
   --blue: #0a66c2;
@@ -794,8 +794,8 @@ body.dark .mini-tag { background: rgba(10,102,194,.2); }
 <!-- Sidebar -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-brand">
-    <div class="sidebar-logo">LB</div>
-    <span>LinkBase 常联系</span>
+    <div class="sidebar-logo">LL</div>
+    <span>领路 LinkLoop</span>
   </div>
   <nav class="sidebar-nav">
     <div class="nav-item active" data-page="dashboard" onclick="navigateTo('dashboard')">
@@ -840,7 +840,7 @@ body.dark .mini-tag { background: rgba(10,102,194,.2); }
     </div>
   </nav>
   <div class="sidebar-footer">
-    © 2026 LinkBase 常联系<br>TRAE AI 创造力大赛
+    © 2026 领路 LinkLoop<br>TRAE AI 创造力大赛
   </div>
 </aside>
 
@@ -1000,13 +1000,13 @@ body.dark .mini-tag { background: rgba(10,102,194,.2); }
     <!-- ========== PAGE: About ========== -->
     <div class="page" id="page-about">
       <div class="section-header">
-        <h2>关于 LinkBase 常联系</h2>
-        <p>AI 个人关系管理助手</p>
+        <h2>关于 领路 LinkLoop</h2>
+        <p>为关键关系找到前进路径</p>
       </div>
       <div class="card" style="padding:28px;max-width:800px">
         <h3 style="font-size:20px;margin-bottom:16px;color:var(--blue)">产品定位</h3>
         <p style="font-size:15px;line-height:1.8;margin-bottom:20px">
-          LinkBase 常联系是一款面向职场个人的 AI 关系管理助手。自动汇总邮件、日历、会议纪要、沟通记录和关注账号动态，帮用户发现<strong>谁在等你、你在等谁、关系发生了什么变化，以及下一步该做什么</strong>。
+          领路 LinkLoop是一款面向职场个人的 AI 关系管理助手。自动汇总邮件、日历、会议纪要、沟通记录和关注账号动态，帮用户发现<strong>谁在等你、你在等谁、关系发生了什么变化，以及下一步该做什么</strong>。
         </p>
         <h3 style="font-size:18px;margin-bottom:14px">四段式产品逻辑</h3>
         <div class="grid-4" style="margin-bottom:24px">
@@ -1288,7 +1288,7 @@ const INBOX_ITEMS = [
 
 const WAITING_FOR_ME = [
   { person: '王总', company: 'XX制造', desc: '等待本地部署方案（数据安全、权限隔离、部署成本）', days: '截止周五', urgency: 'high', action: '今天完成方案修订并发送', contact: 'wang', draft: '王总好，本地部署方案已整理完毕，包含架构图、安全方案（数据加密和权限隔离）以及成本估算。附件请查收。\n\n主要内容：\n1. 部署架构：支持私有化单机和集群两种模式\n2. 数据安全：端到端加密 + 角色权限隔离\n3. 成本估算：含硬件和运维成本明细\n\n如有问题随时沟通，后续可安排一次技术演示。' },
-  { person: '张瑶', company: 'YC', desc: '询问是否有兴趣交流 AI CRM 方向', days: '1 天前', urgency: 'high', action: '今天回复并约时间', contact: 'zhang', draft: '张瑶你好，感谢转发这篇文章，和我们的方向确实非常契合。\n\n我们正在做的 LinkBase 常联系，核心思路是用 AI 自动汇总邮件、日历、沟通记录和社媒动态，帮个人用户做关系持久化分析——让关系管理从"靠记忆"变成"靠系统"。\n\n目前已有初版 Demo，方便的话这周约个时间简短聊聊？' },
+  { person: '张瑶', company: 'YC', desc: '询问是否有兴趣交流 AI CRM 方向', days: '1 天前', urgency: 'high', action: '今天回复并约时间', contact: 'zhang', draft: '张瑶你好，感谢转发这篇文章，和我们的方向确实非常契合。\n\n我们正在做的 领路 LinkLoop，核心思路是用 AI 自动汇总邮件、日历、沟通记录和社媒动态，帮个人用户做关系持久化分析——让关系管理从"靠记忆"变成"靠系统"。\n\n目前已有初版 Demo，方便的话这周约个时间简短聊聊？' },
   { person: '陈工', company: '合作方科技', desc: '今天下午 3 点技术对接会，需要准备接口修订文档', days: '今天 15:00', urgency: 'mid', action: '会前准备接口文档和问题清单', contact: 'chen', draft: null }
 ];
 
@@ -1358,7 +1358,7 @@ const WEEKLY_REPORT = {
   stats: { contacted: 5, newContacts: 2, commitDone: 3, commitPending: 5, events: 3 },
   highlights: [
     { icon: '🔴', text: '王总关系从"沟通中"推进到"方案评估"，但本地部署方案截止时间临近，需立即处理。' },
-    { icon: '🟢', text: '张瑶（YC 合伙人）主动发起交流，LinkBase 所在赛道获得顶级投资人关注。' },
+    { icon: '🟢', text: '张瑶（YC 合伙人）主动发起交流，LinkLoop 所在赛道获得顶级投资人关注。' },
     { icon: '🔵', text: '前同事老李重新联系，在新公司负责 AI 中台，产生潜在合作机会。' },
     { icon: '🟡', text: 'Alex 社媒动态触发了一次自然联系时机，适合发送产品进展更新。' }
   ],
@@ -2004,7 +2004,7 @@ function generateBriefingSuggestions(contact) {
     'alex': ['分享最新产品 Demo 和试点反馈数据', '提供 ROI 量化数据（跟进效率提升 40%）', '了解当前关注的投资主题'],
     'lily': ['礼貌询问面试补充材料反馈进度', '确认后续面试安排', '了解岗位最新状态'],
     'chen': ['确认接口文档修订点是否全部解决', '对齐测试环境搭建时间', '确认 Q3 整体排期和里程碑'],
-    'zhang': ['介绍 LinkBase 产品定位和差异化', '分享 AI CRM 行业理解', '约定后续深度交流时间'],
+    'zhang': ['介绍 LinkLoop 产品定位和差异化', '分享 AI CRM 行业理解', '约定后续深度交流时间'],
     'laoli': ['了解新公司 AI 中台技术选型需求', '探讨产品层面的合作可能', '分享各自最新进展']
   };
   return suggestions[contact.id] || ['了解对方最新需求和关注点', '回顾上次沟通的未决事项', '确认后续合作方向'];

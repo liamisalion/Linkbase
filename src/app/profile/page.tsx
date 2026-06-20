@@ -16,7 +16,7 @@ const PLATFORMS = [
 ];
 
 const VISIBILITY_OPTIONS = [
-  { value: "public", label: "所有人", desc: "所有 LinkBase 用户可见" },
+  { value: "public", label: "所有人", desc: "所有 LinkLoop 用户可见" },
   { value: "linked", label: "已 Link", desc: "已 Link 我的人可见" },
   { value: "tagged", label: "特定标签", desc: "仅特定标签的联系人可见" },
   { value: "private", label: "私密", desc: "不对任何人展示" },
@@ -87,7 +87,7 @@ export default function ProfilePage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">我的 LinkBase 名片</h1>
+        <h1 className="text-2xl font-bold">我的 LinkLoop 名片</h1>
         <p className="text-gray-500 text-sm mt-1">设置你的信息和每个字段的可见级别，控制其他用户 link 你时能看到什么</p>
       </div>
 

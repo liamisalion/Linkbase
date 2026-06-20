@@ -7,9 +7,9 @@ export function Topbar() {
     <header className="fixed top-0 left-0 right-0 z-50 h-14 bg-white border-b border-[var(--border)] flex items-center px-5 gap-4">
       <Link href="/" className="flex items-center gap-2.5 shrink-0">
         <div className="w-8 h-8 rounded-md bg-[var(--blue)] flex items-center justify-center text-white text-xs font-extrabold">
-          LB
+          LL
         </div>
-        <span className="text-base font-bold text-[var(--text)] hidden sm:inline">LinkBase</span>
+        <span className="text-base font-bold text-[var(--text)] hidden sm:inline">LinkLoop</span>
       </Link>
 
       <div className="flex-1 max-w-md mx-auto">

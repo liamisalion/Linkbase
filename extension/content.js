@@ -10,7 +10,7 @@
   function createButton(text, onClick) {
     const btn = document.createElement('button');
     btn.textContent = text;
-    btn.className = 'linkbase-save-btn';
+    btn.className = 'linkloop-save-btn';
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -35,7 +35,7 @@
                           post.querySelector('.feed-shared-social-action-bar');
         if (!actionsBar) return;
 
-        const btn = createButton('📌 保存到 LinkBase', async (b) => {
+        const btn = createButton('📌 保存到 LinkLoop', async (b) => {
           const text = post.querySelector('.feed-shared-text')?.textContent?.trim() || '';
           const author = post.querySelector('.update-components-actor__name')?.textContent?.trim() || '';
           const subtitle = post.querySelector('.update-components-actor__description')?.textContent?.trim() || '';
@@ -62,7 +62,7 @@
         const actionsBar = tweet.querySelector('[role="group"]');
         if (!actionsBar) return;
 
-        const btn = createButton('📌 LB', async (b) => {
+        const btn = createButton('📌 LL', async (b) => {
           const text = tweet.querySelector('[data-testid="tweetText"]')?.textContent?.trim() || '';
           const author = tweet.querySelector('[data-testid="User-Name"]')?.textContent?.trim() || '';
 

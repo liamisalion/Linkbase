@@ -37,12 +37,12 @@
 </head>
 <body>
   <div class="header">
-    <div class="logo">LB</div>
-    <h1>LinkBase 常联系</h1>
+    <div class="logo">LL</div>
+    <h1>领路 LinkLoop</h1>
   </div>
   <div class="content">
     <div class="server-config">
-      <label style="font-size:12px;font-weight:600;color:#667085">LinkBase 服务器地址</label>
+      <label style="font-size:12px;font-weight:600;color:#667085">LinkLoop 服务器地址</label>
       <input type="text" id="serverUrl" value="http://localhost:3000" style="margin-top:4px">
       <button class="btn btn-secondary" style="margin-top:6px" onclick="testConnection()">测试连接</button>
       <div id="connStatus"></div>
@@ -82,7 +82,7 @@
           <textarea id="notes" placeholder="如何认识、关注点..."></textarea>
         </div>
       </div>
-      <button class="btn btn-primary" id="saveContactBtn" onclick="saveContact()">保存到 LinkBase</button>
+      <button class="btn btn-primary" id="saveContactBtn" onclick="saveContact()">保存到 LinkLoop</button>
       <div id="contactStatus"></div>
     </div>
 
@@ -109,11 +109,11 @@
           <textarea id="postContent" placeholder="粘贴或输入动态内容..." style="min-height:80px"></textarea>
         </div>
       </div>
-      <button class="btn btn-primary" id="savePostBtn" onclick="savePost()">保存到 LinkBase</button>
+      <button class="btn btn-primary" id="savePostBtn" onclick="savePost()">保存到 LinkLoop</button>
       <div id="postStatus"></div>
     </div>
   </div>
-  <div class="footer">LinkBase 常联系 · 浏览器插件 v0.1</div>
+  <div class="footer">领路 LinkLoop · 浏览器插件 v0.1</div>
   <script src="popup.js"></script>
 </body>
 </html>

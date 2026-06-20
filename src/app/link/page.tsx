@@ -77,13 +77,13 @@ export default function LinkPage() {
     <div>
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Link 联系人</h1>
-        <p className="text-gray-500 text-sm mt-1">搜索 LinkBase 用户直接 Link，或快速创建手动联系人</p>
+        <p className="text-gray-500 text-sm mt-1">搜索 LinkLoop 用户直接 Link，或快速创建手动联系人</p>
       </div>
 
       <div className="max-w-2xl space-y-4">
         {/* Search */}
         <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-          <h3 className="font-bold mb-3">搜索 LinkBase 用户</h3>
+          <h3 className="font-bold mb-3">搜索 LinkLoop 用户</h3>
           <div className="flex gap-2">
             <input
               value={query}
@@ -109,7 +109,7 @@ export default function LinkPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-sm">{r.name}</span>
-                      <Tag color="blue">LB 用户</Tag>
+                      <Tag color="blue">LL 用户</Tag>
                     </div>
                     <div className="text-xs text-gray-500">{r.company} {r.title ? `· ${r.title}` : ""}</div>
                   </div>
@@ -124,7 +124,7 @@ export default function LinkPage() {
 
           {results.length === 0 && !searching && query && (
             <div className="mt-4 text-center py-6 text-gray-400 text-sm">
-              未找到匹配的 LinkBase 用户
+              未找到匹配的 LinkLoop 用户
               <button onClick={() => setShowManual(true)}
                 className="block mx-auto mt-2 text-[var(--blue)] font-semibold hover:underline">
                 创建手动联系人 →
@@ -209,9 +209,9 @@ export default function LinkPage() {
 
         {/* Help */}
         <div className="bg-gray-50 border border-gray-200 rounded-xl p-5 text-sm text-gray-600 space-y-2">
-          <h4 className="font-bold text-gray-800">LinkBase 用户 vs 手动联系人</h4>
-          <div className="flex items-start gap-2"><Tag color="blue">LB 用户</Tag><span>对方也使用 LinkBase，信息由对方授权展示，自动同步更新</span></div>
-          <div className="flex items-start gap-2"><Tag color="gray">手动</Tag><span>对方不是 LinkBase 用户，你需要手动录入和维护关联账号信息</span></div>
+          <h4 className="font-bold text-gray-800">LinkLoop 用户 vs 手动联系人</h4>
+          <div className="flex items-start gap-2"><Tag color="blue">LL 用户</Tag><span>对方也使用 LinkLoop，信息由对方授权展示，自动同步更新</span></div>
+          <div className="flex items-start gap-2"><Tag color="gray">手动</Tag><span>对方不是 LinkLoop 用户，你需要手动录入和维护关联账号信息</span></div>
         </div>
       </div>
     </div>

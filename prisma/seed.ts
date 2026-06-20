@@ -20,7 +20,7 @@ async function main() {
   const user = await prisma.user.create({
     data: {
       name: "Demo用户",
-      email: "demo@linkbase.app",
+      email: "demo@linkloop.app",
     },
   });
 

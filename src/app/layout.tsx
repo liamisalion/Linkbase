@@ -4,8 +4,8 @@ import { Sidebar } from "@/components/Sidebar";
 import { Topbar } from "@/components/Topbar";
 
 export const metadata: Metadata = {
-  title: "LinkBase 常联系",
-  description: "AI 个人关系管理助手 - 自动汇总邮件、日历、沟通记录和关注账号动态",
+  title: "领路 LinkLoop",
+  description: "为关键关系找到前进路径 - 自动汇总邮件、日历、沟通记录和关注账号动态",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

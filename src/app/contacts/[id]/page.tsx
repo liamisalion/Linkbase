@@ -52,7 +52,7 @@ export default function ContactDetailPage() {
               <Tag color="blue">{contact.type}</Tag>
               <Tag color="green">{contact.stage}</Tag>
               {contact.isLinkedUser ? (
-                <Tag color="blue">LB 用户</Tag>
+                <Tag color="blue">LL 用户</Tag>
               ) : (
                 <Tag color="gray">手动</Tag>
               )}
@@ -135,13 +135,13 @@ export default function ContactDetailPage() {
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-bold">🔗 关联账号</h3>
             {contact.isLinkedUser ? (
-              <span className="text-xs bg-blue-50 text-[var(--blue)] px-2.5 py-1 rounded-full font-bold">LB 用户 · 由对方授权</span>
+              <span className="text-xs bg-blue-50 text-[var(--blue)] px-2.5 py-1 rounded-full font-bold">LL 用户 · 由对方授权</span>
             ) : (
               <span className="text-xs bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full font-bold">手动联系人</span>
             )}
           </div>
           {contact.isLinkedUser ? (
-            <div className="text-sm text-gray-500 bg-blue-50 rounded-lg p-3">该联系人是 LinkBase 用户，信息由对方授权展示并自动同步。</div>
+            <div className="text-sm text-gray-500 bg-blue-50 rounded-lg p-3">该联系人是 LinkLoop 用户，信息由对方授权展示并自动同步。</div>
           ) : (
             <div className="space-y-2.5">
               {[

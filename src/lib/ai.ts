@@ -33,7 +33,7 @@ async function callAI(systemPrompt: string, userPrompt: string): Promise<string>
 }
 
 export async function analyzeInformation(text: string) {
-  const systemPrompt = `你是 LinkBase 常联系的 AI 分析引擎。用户会输入多条来自邮件、日历、聊天记录和社媒动态的信息。
+  const systemPrompt = `你是 领路 LinkLoop的 AI 分析引擎。用户会输入多条来自邮件、日历、聊天记录和社媒动态的信息。
 请分析这些信息，输出一个 JSON 数组，每个元素包含 tag 和 text 字段。
 
 分析维度：
@@ -62,7 +62,7 @@ export async function analyzeRelationship(
   contactName: string,
   interactions: { channel: string; summary: string; date: string }[]
 ) {
-  const systemPrompt = `你是 LinkBase 常联系的 AI 关系分析引擎。根据联系人的互动历史，输出 JSON 对象包含以下字段：
+  const systemPrompt = `你是 领路 LinkLoop的 AI 关系分析引擎。根据联系人的互动历史，输出 JSON 对象包含以下字段：
 - stage: 关系阶段描述
 - interest: 对方关注点排序
 - rhythm: 建议跟进节奏
@@ -94,7 +94,7 @@ export async function generateDraft(
   scenario: string,
   context: string
 ) {
-  const systemPrompt = `你是 LinkBase 常联系的消息草稿生成引擎。根据联系人上下文和场景，生成一封专业、得体的跟进消息。
+  const systemPrompt = `你是 领路 LinkLoop的消息草稿生成引擎。根据联系人上下文和场景，生成一封专业、得体的跟进消息。
 直接输出消息内容，不要加任何额外说明。消息应该简洁、自然，不要过于正式。`;
 
   const userPrompt = `联系人：${contactName}\n场景：${scenario}\n上下文：${context}`;

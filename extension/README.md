@@ -1,4 +1,4 @@
-# LinkBase 浏览器插件
+# LinkLoop 浏览器插件
 
 ## 安装方法
 
@@ -9,13 +9,13 @@
 
 ## 功能
 
-- **保存联系人**：在 Popup 中手动输入联系人信息，一键保存到 LinkBase
+- **保存联系人**：在 Popup 中手动输入联系人信息，一键保存到 LinkLoop
 - **保存动态**：在 Popup 中粘贴社媒动态内容，保存并 AI 分析
-- **页面内按钮**：在 LinkedIn 和 X/Twitter 的帖子上自动添加"保存到 LinkBase"按钮
+- **页面内按钮**：在 LinkedIn 和 X/Twitter 的帖子上自动添加"保存到 LinkLoop"按钮
 
 ## 配置
 
-在插件 Popup 中设置 LinkBase 服务器地址（默认 `http://localhost:3000`），点击"测试连接"确认可用。
+在插件 Popup 中设置 LinkLoop 服务器地址（默认 `http://localhost:3000`），点击"测试连接"确认可用。
 
 ## 图标
 
